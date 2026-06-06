@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LSPD Hub — Los Santos Police Department</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c12;--surface:#0d1420;--surface2:#111c2e;
+  --border:rgba(30,160,255,0.13);--border-bright:rgba(30,160,255,0.35);
+  --accent:#1ea0ff;--accent2:#0affcc;--accent-glow:rgba(30,160,255,0.18);
+  --gold:#f0c040;--text:#ccddf5;--text-dim:#6a85a8;
+  --danger:#ff4060;--success:#0affcc;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:1000}
+
+/* HEADER */
+header{background:linear-gradient(180deg,rgba(8,12,18,.98),rgba(13,20,32,.95));border-bottom:1px solid var(--border-bright);padding:0 1.5rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:1.25rem;height:62px}
+.logo-badge{display:flex;align-items:center;gap:.8rem;text-decoration:none;flex-shrink:0}
+.badge-shield svg{width:40px;height:40px}
+.logo-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:.12em;color:#fff;text-transform:uppercase}
+.logo-sub{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--accent);letter-spacing:.18em;margin-top:2px}
+.header-divider{width:1px;height:28px;background:var(--border-bright);flex-shrink:0}
+nav{display:flex;gap:.15rem;flex:1;flex-wrap:wrap}
+.nav-btn{background:none;border:none;color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .75rem;border-radius:4px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-btn:hover,.nav-btn.active{color:#fff}
+.nav-btn.active{background:var(--accent-glow);color:var(--accent)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 7px var(--accent2);animation:pulse 2s infinite;flex-shrink:0}
+.status-label{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--accent2);letter-spacing:.1em;white-space:nowrap}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* MAIN */
+main{max-width:1400px;margin:0 auto;padding:1.75rem 1.5rem}
+.section{display:none;animation:fadeIn .3s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* HERO */
+.hero{border:1px solid var(--border);border-radius:10px;background:linear-gradient(135deg,var(--surface),#0a1628);padding:2.25rem 2.75rem;margin-bottom:1.75rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(30,160,255,.07) 0%,transparent 70%);pointer-events:none}
+.hero-tag{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:.5rem}
+.hero h1{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:2.2rem;letter-spacing:.05em;line-height:1.1;color:#fff;text-transform:uppercase;margin-bottom:.65rem}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:.88rem;color:var(--text-dim);max-width:540px;line-height:1.6}
+.hero-stats{display:flex;gap:1.75rem;margin-top:1.5rem;flex-wrap:wrap}
+.stat-value{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.4rem;color:var(--accent)}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--text-dim);letter-spacing:.12em}
+
+/* SECTION HEADER */
+.section-header{display:flex;align-items:center;gap:.65rem;margin-bottom:1.25rem}
+.section-header h2{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:.12em;text-transform:uppercase;color:#fff;white-space:nowrap}
+.section-header .tag{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:.15em;color:var(--accent);background:var(--accent-glow);border:1px solid var(--border-bright);padding:2px 7px;border-radius:3px;text-transform:uppercase;white-space:nowrap}
+.section-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border-bright),transparent)}
+
+/* DASHBOARD GRID */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem;margin-bottom:1.75rem}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.1rem;position:relative;overflow:hidden}
+.dash-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--accent);opacity:.3}
+.dash-icon{font-size:1.3rem;margin-bottom:.3rem}
+.dash-val{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.8rem;color:#fff;line-height:1}
+.dash-label{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-top:.3rem}
+.dash-change{font-size:.72rem;color:var(--accent2);font-family:'Share Tech Mono',monospace;margin-top:.2rem}
+
+/* NOTICES */
+.notice-list{display:flex;flex-direction:column;gap:.7rem}
+.notice-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:.9rem 1.1rem;display:flex;gap:.9rem;align-items:flex-start}
+.notice-card.urgent{border-left-color:var(--danger)}
+.notice-card.info{border-left-color:var(--accent2)}
+.notice-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px}
+.notice-content{flex:1}
+.notice-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;color:#fff;margin-bottom:.25rem;letter-spacing:.04em}
+.notice-text{font-size:.8rem;color:var(--text-dim);line-height:1.5}
+.notice-meta{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--text-dim);margin-top:.35rem;letter-spacing:.1em}
+
+/* TEMPLATE SECTION */
+.template-categories{display:flex;gap:.4rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.cat-btn{background:var(--surface);border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .85rem;border-radius:4px;cursor:pointer;transition:all .2s}
+.cat-btn:hover,.cat-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.9rem}
+.template-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.1rem 1.3rem;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.45rem}
+.template-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--accent);opacity:0;transition:opacity .2s}
+.template-card:hover{border-color:var(--border-bright);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.template-card:hover::before{opacity:1}
+.card-type{font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;padding:2px 6px;border-radius:3px;width:fit-content}
+.type-arrest{color:var(--danger);background:rgba(255,64,96,.1);border:1px solid rgba(255,64,96,.25)}
+.type-report{color:var(--accent);background:var(--accent-glow);border:1px solid var(--border-bright)}
+.type-warrant{color:var(--gold);background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.25)}
+.type-notice{color:var(--accent2);background:rgba(10,255,204,.08);border:1px solid rgba(10,255,204,.2)}
+.type-internal{color:#b57fff;background:rgba(181,127,255,.08);border:1px solid rgba(181,127,255,.2)}
+.type-legal{color:#ff9f40;background:rgba(255,159,64,.08);border:1px solid rgba(255,159,64,.25)}
+.type-intel{color:#e040ff;background:rgba(224,64,255,.08);border:1px solid rgba(224,64,255,.2)}
+.card-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.05em;color:#fff}
+.card-desc{font-size:.78rem;color:var(--text-dim);line-height:1.45}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:.4rem;padding-top:.65rem;border-top:1px solid var(--border)}
+.card-meta{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--text-dim)}
+.btn-use{background:none;border:1px solid var(--accent);color:var(--accent);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;padding:.28rem .75rem;border-radius:4px;cursor:pointer;transition:all .2s}
+.btn-use:hover{background:var(--accent);color:#000}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(4,8,16,.9);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;padding:1.25rem}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border-bright);border-radius:10px;width:100%;max-width:800px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 40px rgba(30,160,255,.07);animation:modalIn .22s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:10}
+.modal-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.modal-close{background:none;border:1px solid var(--border);color:var(--text-dim);width:30px;height:30px;border-radius:5px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.modal-close:hover{border-color:var(--danger);color:var(--danger)}
+.modal-body{padding:1.4rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.form-group{display:flex;flex-direction:column;gap:.35rem}
+.form-group.span2{grid-column:span 2}
+.form-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.15em;color:var(--accent);text-transform:uppercase}
+.form-input,.form-textarea,.form-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Exo 2',sans-serif;font-size:.86rem;padding:.5rem .8rem;border-radius:5px;outline:none;transition:border-color .2s}
+.form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,160,255,.1)}
+.form-textarea{resize:vertical;min-height:90px}
+.form-select option{background:var(--surface2)}
+
+/* PLEA TOGGLE */
+.plea-group{display:flex;gap:.5rem;margin-top:.1rem}
+.plea-btn{flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase;padding:.5rem;border-radius:5px;cursor:pointer;transition:all .18s;text-align:center}
+.plea-btn.guilty.active{background:rgba(255,64,96,.15);border-color:var(--danger);color:var(--danger)}
+.plea-btn.notguilty.active{background:rgba(10,255,204,.1);border-color:var(--accent2);color:var(--accent2)}
+.plea-btn:hover{border-color:var(--text-dim);color:#fff}
+
+.modal-footer{padding:.9rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:.65rem;position:sticky;bottom:0;background:var(--surface)}
+.btn-primary{background:var(--accent);border:none;color:#000;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;padding:.55rem 1.4rem;border-radius:5px;cursor:pointer;transition:all .2s}
+.btn-primary:hover{background:#5dc8ff;box-shadow:0 0 16px rgba(30,160,255,.4)}
+.btn-secondary{background:none;border:1px solid var(--border);color:var(--text-dim);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.84rem;letter-spacing:.08em;text-transform:uppercase;padding:.5rem 1.1rem;border-radius:5px;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{border-color:var(--text-dim);color:#fff}
+
+/* OUTPUT */
+.output-box{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:1.1rem;font-family:'Share Tech Mono',monospace;font-size:.78rem;line-height:1.8;color:var(--text);white-space:pre-wrap;margin-top:.9rem;display:none}
+.output-box.visible{display:block}
+.output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;padding-bottom:.65rem;border-bottom:1px solid var(--border)}
+.output-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase}
+.btn-copy{background:none;border:1px solid var(--accent2);color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:.66rem;padding:.22rem .65rem;border-radius:4px;cursor:pointer;transition:all .15s;letter-spacing:.1em}
+.btn-copy:hover{background:var(--accent2);color:#000}
+
+/* CHARGE PICKER */
+.charge-picker{position:relative}
+.charge-picker-header{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-bottom:.35rem;display:flex;align-items:center;gap:.5rem}
+.cp-count{background:var(--accent);color:#000;font-size:.56rem;font-weight:700;padding:1px 6px;border-radius:20px;min-width:18px;text-align:center}
+.charge-search-input{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Exo 2',sans-serif;font-size:.86rem;padding:.5rem .8rem;border-radius:5px;outline:none;transition:border-color .2s}
+.charge-search-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,160,255,.1)}
+.charge-search-input::placeholder{color:var(--text-dim)}
+.charge-dropdown{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#0f1928;border:1px solid var(--border-bright);border-radius:7px;max-height:220px;overflow-y:auto;z-index:600;box-shadow:0 12px 32px rgba(0,0,0,.6);display:none}
+.charge-dropdown.open{display:block}
+.charge-option{display:flex;align-items:center;gap:.7rem;padding:.55rem .9rem;cursor:pointer;border-bottom:1px solid rgba(30,160,255,.05);transition:background .12s}
+.charge-option:last-child{border-bottom:none}
+.charge-option:hover{background:rgba(30,160,255,.07)}
+.charge-option.selected{background:rgba(30,160,255,.1)}
+.co-code{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent);font-weight:700;min-width:70px;letter-spacing:.04em}
+.co-name{font-size:.83rem;color:var(--text);flex:1}
+.co-cat{font-family:'Share Tech Mono',monospace;font-size:.56rem;color:var(--text-dim);padding:1px 5px;border:1px solid var(--border);border-radius:3px}
+.co-check{width:15px;height:15px;border:1px solid var(--border-bright);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.68rem;color:var(--accent);background:transparent;transition:all .12s}
+.charge-option.selected .co-check{background:var(--accent);border-color:var(--accent);color:#000}
+.charge-no-results{padding:.9rem;text-align:center;color:var(--text-dim);font-size:.8rem;font-family:'Share Tech Mono',monospace}
+.charge-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.5rem;min-height:26px}
+.charge-tag{display:flex;align-items:center;gap:.3rem;background:rgba(30,160,255,.1);border:1px solid var(--border-bright);border-radius:4px;padding:.22rem .45rem .22rem .55rem;font-family:'Share Tech Mono',monospace;font-size:.64rem;color:var(--accent);letter-spacing:.04em}
+.charge-tag-remove{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.7rem;line-height:1;padding:0;display:flex;align-items:center;transition:color .12s}
+.charge-tag-remove:hover{color:var(--danger)}
+.charge-empty-hint{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--text-dim);letter-spacing:.08em;font-style:italic}
+
+/* RANK STRUCTURE */
+.rank-section{margin-bottom:2.25rem}
+.rank-section-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.9rem;display:flex;align-items:center;gap:.65rem}
+.rank-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.rank-list{display:flex;flex-direction:column;gap:.45rem}
+.rank-row{display:grid;grid-template-columns:38px 3fr 2fr 1fr;align-items:center;gap:.9rem;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:.8rem 1.1rem;transition:border-color .2s}
+.rank-row:hover{border-color:var(--border-bright)}
+.rank-num{font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--text-dim);text-align:center}
+.rank-info{display:flex;flex-direction:column;gap:2px}
+.rank-title-text{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.97rem;letter-spacing:.05em;color:#fff}
+.rank-abbrev{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--accent);letter-spacing:.12em}
+.rank-perks{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.25rem}
+.perk{font-size:.62rem;color:var(--text-dim);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-family:'Share Tech Mono',monospace;letter-spacing:.07em}
+.rank-desc{font-size:.76rem;color:var(--text-dim);line-height:1.4}
+.rank-badge{font-family:'Share Tech Mono',monospace;font-size:.6rem;text-align:right;padding:2px 7px;border-radius:3px;width:fit-content;margin-left:auto}
+.badge-command{color:var(--gold);background:rgba(240,192,64,.12);border:1px solid rgba(240,192,64,.3)}
+.badge-supervisor{color:var(--accent);background:var(--accent-glow);border:1px solid var(--border-bright)}
+.badge-patrol{color:var(--accent2);background:rgba(10,255,204,.07);border:1px solid rgba(10,255,204,.2)}
+.badge-trainee{color:var(--text-dim);background:rgba(255,255,255,.04);border:1px solid var(--border)}
+
+/* PENAL CODE / LEGAL REFERENCE */
+.ref-search{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'Exo 2',sans-serif;font-size:.9rem;padding:.6rem 1rem;border-radius:6px;outline:none;width:100%;margin-bottom:1.1rem;transition:border-color .2s}
+.ref-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,160,255,.1)}
+.ref-search::placeholder{color:var(--text-dim)}
+.ref-category{margin-bottom:1.5rem}
+.ref-cat-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.65rem;display:flex;align-items:center;gap:.6rem}
+.ref-cat-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.ref-table{width:100%;border-collapse:collapse}
+.ref-table th{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);padding:.5rem .8rem;text-align:left;border-bottom:1px solid var(--border-bright)}
+.ref-table td{padding:.55rem .8rem;font-size:.82rem;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top}
+.ref-table tr:last-child td{border-bottom:none}
+.ref-table tr:hover td{background:rgba(30,160,255,.04)}
+.pc-code{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--accent);font-weight:700;white-space:nowrap}
+.pc-sentence{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--gold)}
+.pc-fine{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent2)}
+.pc-hidden{display:none}
+
+/* COMP CALCULATOR */
+.calc-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1.5rem;max-width:700px}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.calc-result{background:var(--bg);border:1px solid var(--border-bright);border-radius:6px;padding:1.25rem;margin-top:1rem}
+.calc-result-title{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-bottom:.75rem}
+.calc-line{display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:.84rem}
+.calc-line:last-child{border-bottom:none;padding-top:.5rem;margin-top:.25rem}
+.calc-line.total{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;color:#fff}
+.calc-val{font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--text)}
+.calc-val.money{color:var(--accent2)}
+.calc-val.total{color:var(--gold);font-size:1rem}
+
+/* LEGAL / RIGHTS REFERENCE */
+.law-section{margin-bottom:2rem}
+.law-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.08em;color:#fff;margin-bottom:.3rem}
+.law-subtitle{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--accent);letter-spacing:.12em;margin-bottom:.65rem}
+.law-text{font-size:.84rem;color:var(--text);line-height:1.7;margin-bottom:.5rem}
+.law-text strong{color:var(--accent);font-weight:600}
+.law-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:.9rem 1.1rem;margin-bottom:.65rem}
+.law-card.gold{border-left-color:var(--gold)}
+.law-card.green{border-left-color:var(--accent2)}
+.law-card-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;color:#fff;letter-spacing:.05em;margin-bottom:.3rem}
+.law-card-text{font-size:.8rem;color:var(--text-dim);line-height:1.55}
+.amendment-num{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.1em;margin-bottom:.2rem}
+.case-header{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.97rem;color:#fff;letter-spacing:.04em}
+.case-meta{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--gold);letter-spacing:.1em;margin-bottom:.3rem}
+.case-text{font-size:.8rem;color:var(--text-dim);line-height:1.55}
+.case-ruling{font-family:'Share Tech Mono',monospace;font-size:.72rem;color:var(--accent2);margin-top:.4rem;letter-spacing:.06em}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface2);border:1px solid var(--accent2);color:var(--accent2);font-family:'Share Tech Mono',monospace;font-size:.72rem;letter-spacing:.1em;padding:.7rem 1.1rem;border-radius:6px;z-index:9999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(30,160,255,.25);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(30,160,255,.5)}
+
+@media(max-width:900px){
+  .dash-grid{grid-template-columns:1fr 1fr}
+  nav{display:none}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.span2{grid-column:span 1}
+  .rank-row{grid-template-columns:30px 1fr 1fr}
+  .rank-row .rank-desc{display:none}
+  .calc-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="header-inner">
+  <a class="logo-badge" href="#">
+    <div class="badge-shield">
+      <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 3L5 9V21C5 30 13 38 21 40C29 38 37 30 37 21V9L21 3Z" fill="rgba(30,160,255,0.12)" stroke="#1ea0ff" stroke-width="1.5"/>
+        <path d="M21 8L9 13V21C9 28.5 15 35 21 37C27 35 33 28.5 33 21V13L21 8Z" fill="rgba(30,160,255,0.08)" stroke="rgba(30,160,255,0.5)" stroke-width="1"/>
+        <text x="21" y="26" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700" font-size="10" fill="#1ea0ff" letter-spacing="1">LSPD</text>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-title">LSPD Hub</div>
+      <div class="logo-sub">Paperwork & Records System</div>
+    </div>
+  </a>
+  <div class="header-divider"></div>
+  <nav>
+    <button class="nav-btn active" onclick="showSection('dashboard',this)">Dashboard</button>
+    <button class="nav-btn" onclick="showSection('templates',this)">Templates</button>
+    <button class="nav-btn" onclick="showSection('ranks',this)">Ranks</button>
+    <button class="nav-btn" onclick="showSection('penalcode',this)">Penal Code</button>
+    <button class="nav-btn" onclick="showSection('rights',this)">Bill of Rights</button>
+    <button class="nav-btn" onclick="showSection('caselaw',this)">Case Law</button>
+    <button class="nav-btn" onclick="showSection('legal',this)">Legal Defs</button>
+    <button class="nav-btn" onclick="showSection('compcalc',this)">Comp Calc</button>
+  </nav>
+  <div style="display:flex;align-items:center;gap:.5rem;margin-left:auto">
+    <div class="status-dot"></div>
+    <span class="status-label">SYSTEM ONLINE</span>
+  </div>
+</div>
+</header>
+
+<main>
+
+<!-- ═══ DASHBOARD ═══ -->
+<section id="dashboard" class="section active">
+  <div class="hero">
+    <div class="hero-tag">// LOS SANTOS POLICE DEPARTMENT — INTERNAL SYSTEM</div>
+    <h1>Welcome to<br><span>LSPD Hub</span></h1>
+    <p>Official paperwork management portal for the Los Santos Police Department. Access templates, rank structure, legal references, and department resources.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-value">28</div><div class="stat-label">Templates</div></div>
+      <div class="stat"><div class="stat-value">12</div><div class="stat-label">Active Ranks</div></div>
+      <div class="stat"><div class="stat-value">80+</div><div class="stat-label">Penal Codes</div></div>
+      <div class="stat"><div class="stat-value">6</div><div class="stat-label">Legal Refs</div></div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-card"><div class="dash-icon">📋</div><div class="dash-val">28</div><div class="dash-label">Templates</div><div class="dash-change">↑ 18 added</div></div>
+    <div class="dash-card"><div class="dash-icon">⚖️</div><div class="dash-val">80+</div><div class="dash-label">Penal Codes</div><div class="dash-change">Searchable</div></div>
+    <div class="dash-card"><div class="dash-icon">🎖️</div><div class="dash-val">12</div><div class="dash-label">Rank Tiers</div><div class="dash-change">Command + Patrol</div></div>
+    <div class="dash-card"><div class="dash-icon">📢</div><div class="dash-val">3</div><div class="dash-label">Bulletins</div><div class="dash-change">Read required</div></div>
+  </div>
+  <div class="section-header"><h2>Department Bulletins</h2><span class="tag">Latest</span><div class="section-line"></div></div>
+  <div class="notice-list">
+    <div class="notice-card urgent">
+      <div class="notice-icon">🚨</div>
+      <div class="notice-content">
+        <div class="notice-title">MANDATORY: Updated Arrest Report Format + Plea Field</div>
+        <div class="notice-text">All arrest reports must now include the suspect's plea (Guilty / Not Guilty). The updated template includes a plea selection. Use the new format immediately.</div>
+        <div class="notice-meta">POSTED BY: COMMISSIONER OFFICE · DATE: 2025-06-01 · PRIORITY: URGENT</div>
+      </div>
+    </div>
+    <div class="notice-card">
+      <div class="notice-icon">📌</div>
+      <div class="notice-content">
+        <div class="notice-title">Promotion Cycle — Applications Now Open</div>
+        <div class="notice-text">Q3 promotion cycle is open. Officers meeting eligibility criteria may submit applications using the Promotion Application template. Deadline 14 days from this notice.</div>
+        <div class="notice-meta">POSTED BY: HR DIVISION · DATE: 2025-05-28 · PRIORITY: STANDARD</div>
+      </div>
+    </div>
+    <div class="notice-card info">
+      <div class="notice-icon">ℹ️</div>
+      <div class="notice-content">
+        <div class="notice-title">Hub Updated — 18 New Templates Added</div>
+        <div class="notice-text">Major hub update: OIS reports, SWAT after-action, K9 records, gang files, wanted posters, court dockets, investigation reports, cold cases, subpoenas, protection orders, evidence reports, masterfiles, compensation calculator, and legal references are now available.</div>
+        <div class="notice-meta">POSTED BY: IT DIVISION · DATE: 2025-06-02 · PRIORITY: INFO</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TEMPLATES ═══ -->
+<section id="templates" class="section">
+  <div class="section-header"><h2>Document Templates</h2><span class="tag" id="templateCountTag">28 Available</span><div class="section-line"></div></div>
+  <div class="template-categories">
+    <button class="cat-btn active" onclick="filterCat('all',this)">All</button>
+    <button class="cat-btn" onclick="filterCat('arrest',this)">Arrest</button>
+    <button class="cat-btn" onclick="filterCat('report',this)">Reports</button>
+    <button class="cat-btn" onclick="filterCat('warrant',this)">Warrants</button>
+    <button class="cat-btn" onclick="filterCat('notice',this)">Notices</button>
+    <button class="cat-btn" onclick="filterCat('internal',this)">Internal</button>
+    <button class="cat-btn" onclick="filterCat('intel',this)">Intelligence</button>
+    <button class="cat-btn" onclick="filterCat('legal',this)">Legal</button>
+  </div>
+  <div class="template-grid" id="templateGrid"></div>
+</section>
+
+<!-- ═══ RANKS ═══ -->
+<section id="ranks" class="section">
+  <div class="section-header"><h2>Rank Structure</h2><span class="tag">LSPD Official</span><div class="section-line"></div></div>
+  <div class="rank-section">
+    <div class="rank-section-title">Command Division</div>
+    <div class="rank-list">
+      <div class="rank-row"><span class="rank-num">I</span><div class="rank-info"><span class="rank-title-text">Chief of Police</span><span class="rank-abbrev">CHIEF</span><div class="rank-perks"><span class="perk">All Access</span><span class="perk">Policy Control</span><span class="perk">Hiring &amp; Firing</span></div></div><div class="rank-desc">Leads the entire department. Full authority over policy, promotions, and operations. Direct oversight of all divisions.</div><span class="rank-badge badge-command">COMMAND</span></div>
+      <div class="rank-row"><span class="rank-num">II</span><div class="rank-info"><span class="rank-title-text">Deputy Chief</span><span class="rank-abbrev">DCHIEF</span><div class="rank-perks"><span class="perk">High Command</span><span class="perk">Division Head</span></div></div><div class="rank-desc">Assists the Chief. Acts as Chief in their absence. Oversees department-wide operations.</div><span class="rank-badge badge-command">COMMAND</span></div>
+      <div class="rank-row"><span class="rank-num">III</span><div class="rank-info"><span class="rank-title-text">Assistant Chief</span><span class="rank-abbrev">ACHIEF</span><div class="rank-perks"><span class="perk">High Command</span><span class="perk">Division Lead</span></div></div><div class="rank-desc">Manages a specific division or bureau. Reports directly to the Deputy Chief.</div><span class="rank-badge badge-command">COMMAND</span></div>
+      <div class="rank-row"><span class="rank-num">IV</span><div class="rank-info"><span class="rank-title-text">Captain</span><span class="rank-abbrev">CPT</span><div class="rank-perks"><span class="perk">Shift Command</span><span class="perk">Promotions</span></div></div><div class="rank-desc">Commands a precinct or shift. Responsible for sergeant performance and patrol operations.</div><span class="rank-badge badge-command">COMMAND</span></div>
+    </div>
+  </div>
+  <div class="rank-section">
+    <div class="rank-section-title">Supervisory Division</div>
+    <div class="rank-list">
+      <div class="rank-row"><span class="rank-num">V</span><div class="rank-info"><span class="rank-title-text">Lieutenant</span><span class="rank-abbrev">LT</span><div class="rank-perks"><span class="perk">Scene Command</span><span class="perk">Reports</span></div></div><div class="rank-desc">Assists the Captain in patrol oversight. Commands scenes in absence of higher command.</div><span class="rank-badge badge-supervisor">SUPERVISOR</span></div>
+      <div class="rank-row"><span class="rank-num">VI</span><div class="rank-info"><span class="rank-title-text">Sergeant</span><span class="rank-abbrev">SGT</span><div class="rank-perks"><span class="perk">Patrol Lead</span><span class="perk">Discipline</span></div></div><div class="rank-desc">Directly supervises patrol officers. Conducts evaluations, approves paperwork, leads patrol shifts.</div><span class="rank-badge badge-supervisor">SUPERVISOR</span></div>
+      <div class="rank-row"><span class="rank-num">VII</span><div class="rank-info"><span class="rank-title-text">Senior Corporal</span><span class="rank-abbrev">SCPL</span><div class="rank-perks"><span class="perk">FTO Certified</span><span class="perk">Training</span></div></div><div class="rank-desc">Experienced officer with FTO certification. Can train cadets and act as shift lead.</div><span class="rank-badge badge-supervisor">SUPERVISOR</span></div>
+      <div class="rank-row"><span class="rank-num">VIII</span><div class="rank-info"><span class="rank-title-text">Corporal</span><span class="rank-abbrev">CPL</span><div class="rank-perks"><span class="perk">FTO</span><span class="perk">Ride-Alongs</span></div></div><div class="rank-desc">Junior supervisor. Eligible for FTO certification. Assists sergeant in minor admin tasks.</div><span class="rank-badge badge-supervisor">SUPERVISOR</span></div>
+    </div>
+  </div>
+  <div class="rank-section">
+    <div class="rank-section-title">Patrol Division</div>
+    <div class="rank-list">
+      <div class="rank-row"><span class="rank-num">IX</span><div class="rank-info"><span class="rank-title-text">Senior Officer</span><span class="rank-abbrev">SOFC</span><div class="rank-perks"><span class="perk">Solo Patrol</span><span class="perk">Full Certs</span></div></div><div class="rank-desc">Experienced patrol officer. Full access to all certifications. May apply for supervisory roles.</div><span class="rank-badge badge-patrol">PATROL</span></div>
+      <div class="rank-row"><span class="rank-num">X</span><div class="rank-info"><span class="rank-title-text">Officer</span><span class="rank-abbrev">OFC</span><div class="rank-perks"><span class="perk">Solo Patrol</span><span class="perk">Certs</span></div></div><div class="rank-desc">Full patrol officer. Handles calls, arrests, and reports independently.</div><span class="rank-badge badge-patrol">PATROL</span></div>
+      <div class="rank-row"><span class="rank-num">XI</span><div class="rank-info"><span class="rank-title-text">Probationary Officer</span><span class="rank-abbrev">POFC</span><div class="rank-perks"><span class="perk">Supervised</span></div></div><div class="rank-desc">Completed academy. On probationary period with FTO supervision.</div><span class="rank-badge badge-trainee">PROBATION</span></div>
+      <div class="rank-row"><span class="rank-num">XII</span><div class="rank-info"><span class="rank-title-text">Cadet</span><span class="rank-abbrev">CDT</span><div class="rank-perks"><span class="perk">Academy Only</span></div></div><div class="rank-desc">Newly recruited officer. Must complete the LSPD Academy before progressing.</div><span class="rank-badge badge-trainee">TRAINEE</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PENAL CODE ═══ -->
+<section id="penalcode" class="section">
+  <div class="section-header"><h2>Simplified Penal Code</h2><span class="tag">LSPD Reference</span><div class="section-line"></div></div>
+  <input class="ref-search" type="text" placeholder="Search by code, offense name, or category..." oninput="filterPC(this.value)" id="pcSearch">
+  <div id="pcTable"></div>
+</section>
+
+<!-- ═══ BILL OF RIGHTS ═══ -->
+<section id="rights" class="section">
+  <div class="section-header"><h2>Bill of Rights &amp; Amendments</h2><span class="tag">San Andreas Constitution</span><div class="section-line"></div></div>
+  <div class="law-text" style="margin-bottom:1.5rem">The following rights and amendments apply to all citizens of San Andreas. Law enforcement officers are required to uphold these rights at all times. Violations may result in disciplinary action, case dismissal, or civil liability.</div>
+
+  <div class="law-section">
+    <div class="law-title">Bill of Rights</div>
+    <div class="law-subtitle">FUNDAMENTAL PROTECTIONS — APPLICABLE TO ALL CITIZENS</div>
+    <div class="law-card"><div class="amendment-num">AMENDMENT I</div><div class="law-card-title">Freedom of Speech, Press &amp; Assembly</div><div class="law-card-text">All citizens have the right to free speech, freedom of the press, and the right to peacefully assemble. No law enforcement officer may arrest or detain an individual solely for speech or peaceful protest.</div></div>
+    <div class="law-card"><div class="amendment-num">AMENDMENT II</div><div class="law-card-title">Right to Bear Arms</div><div class="law-card-text">Citizens have the right to legally own and carry firearms. Officers may only seize firearms where there is probable cause to believe the firearm is illegally possessed or used in a crime.</div></div>
+    <div class="law-card gold"><div class="amendment-num">AMENDMENT IV</div><div class="law-card-title">Protection Against Unreasonable Search &amp; Seizure</div><div class="law-card-text">No officer may search a person, their property, or vehicle without: (1) a valid search warrant, (2) consent of the individual, or (3) exigent circumstances (imminent danger, hot pursuit, plain view). Evidence obtained in violation is inadmissible.</div></div>
+    <div class="law-card gold"><div class="amendment-num">AMENDMENT V</div><div class="law-card-title">Right Against Self-Incrimination / Double Jeopardy</div><div class="law-card-text">No citizen shall be compelled to be a witness against themselves. Citizens cannot be tried twice for the same crime after acquittal. Miranda Rights must be read upon custodial arrest.</div></div>
+    <div class="law-card green"><div class="amendment-num">AMENDMENT VI</div><div class="law-card-title">Right to a Speedy Trial &amp; Legal Counsel</div><div class="law-card-text">Every accused person has the right to a speedy trial, to be informed of charges against them, and to have legal representation. If a suspect cannot afford an attorney, one must be provided.</div></div>
+    <div class="law-card green"><div class="amendment-num">AMENDMENT VIII</div><div class="law-card-title">Protection Against Cruel and Unusual Punishment</div><div class="law-card-text">No punishment shall be excessive, cruel, or unusual. Sentences must be proportional to the offense. Use of excessive force or torture by officers is strictly prohibited.</div></div>
+    <div class="law-card"><div class="amendment-num">AMENDMENT XIV</div><div class="law-card-title">Equal Protection &amp; Due Process</div><div class="law-card-text">All citizens are entitled to equal protection under the law. No person shall be deprived of life, liberty, or property without due process. Discrimination in law enforcement based on race, gender, religion, or nationality is prohibited.</div></div>
+  </div>
+
+  <div class="law-section">
+    <div class="law-title">Miranda Rights</div>
+    <div class="law-subtitle">MUST BE READ UPON CUSTODIAL ARREST</div>
+    <div class="law-card gold">
+      <div class="law-card-title">Standard Miranda Warning</div>
+      <div class="law-card-text">
+        "You have the right to remain silent. Anything you say can and will be used against you in a court of law.<br><br>
+        You have the right to an attorney. If you cannot afford an attorney, one will be appointed for you.<br><br>
+        Do you understand the rights I have just read to you? With these rights in mind, do you wish to speak to me?"
+      </div>
+    </div>
+    <div class="law-card"><div class="law-card-title">When Miranda is Required</div><div class="law-card-text">Miranda must be read when a suspect is: (1) in custody (not free to leave), AND (2) subject to interrogation. Failure to Mirandize does not make an arrest unlawful but renders any statements inadmissible.</div></div>
+  </div>
+
+  <div class="law-section">
+    <div class="law-title">Officer Rights (POBR)</div>
+    <div class="law-subtitle">POLICE OFFICER BILL OF RIGHTS</div>
+    <div class="law-card"><div class="law-card-title">Right to Union Representation</div><div class="law-card-text">An officer under investigation has the right to union representation during any interrogation that may lead to disciplinary action.</div></div>
+    <div class="law-card"><div class="law-card-title">Garrity Rights</div><div class="law-card-text">Statements made by officers under threat of job loss cannot be used in criminal proceedings against that officer. Officers may be compelled to answer questions about job performance.</div></div>
+    <div class="law-card"><div class="law-card-title">Right to Written Notice</div><div class="law-card-text">Officers must be given written notice of any allegations against them, the nature of the investigation, and the time and place of any interrogation at least 48 hours in advance.</div></div>
+  </div>
+</section>
+
+<!-- ═══ CASE LAW ═══ -->
+<section id="caselaw" class="section">
+  <div class="section-header"><h2>Case Law Reference</h2><span class="tag">FiveM RP Precedents</span><div class="section-line"></div></div>
+  <div class="law-text" style="margin-bottom:1.5rem">The following case law establishes legal precedents used in San Andreas courts. Officers should be familiar with these rulings as they directly affect search, seizure, arrest, and interrogation procedures.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem" id="caseLawGrid">
+    <div class="law-card"><div class="case-header">State v. Malone</div><div class="case-meta">SEARCH & SEIZURE · Landmark</div><div class="case-text">During a traffic stop, officers detected the odor of marijuana and searched the vehicle without a warrant. The court ruled that probable cause established by plain smell constitutes an exception to the warrant requirement.</div><div class="case-ruling">RULING: Warrantless search lawful under plain smell doctrine.</div></div>
+    <div class="law-card gold"><div class="case-header">People v. Reyes</div><div class="case-meta">MIRANDA RIGHTS · Landmark</div><div class="case-text">A suspect confessed during interrogation without having been read their Miranda rights. The court held that the confession was inadmissible as it was obtained in violation of the suspect's Fifth Amendment rights.</div><div class="case-ruling">RULING: Confession suppressed — Miranda violation.</div></div>
+    <div class="law-card"><div class="case-header">State v. Torres</div><div class="case-meta">USE OF FORCE · Precedent</div><div class="case-text">An officer used lethal force against an unarmed suspect who was fleeing on foot. The court established that officers may not use lethal force against a fleeing suspect unless the suspect poses an imminent threat to the public.</div><div class="case-ruling">RULING: Use of lethal force against non-threatening fleeing suspect unlawful.</div></div>
+    <div class="law-card gold"><div class="case-header">Martinez v. LSPD</div><div class="case-meta">EXCESSIVE FORCE · Civil</div><div class="case-text">A citizen sued LSPD after an officer used a taser on a compliant and handcuffed individual. The court found the department liable and established that any force used after a suspect is restrained may constitute excessive force.</div><div class="case-ruling">RULING: Department liable — force after restraint is excessive.</div></div>
+    <div class="law-card green"><div class="case-header">In re: State v. Huang</div><div class="case-meta">EVIDENCE · Landmark</div><div class="case-text">Evidence obtained via an illegal wiretap was submitted at trial. The court applied the Exclusionary Rule and fruit of the poisonous tree doctrine, suppressing all derivative evidence obtained as a result of the illegal search.</div><div class="case-ruling">RULING: All derivative evidence suppressed under fruit of the poisonous tree.</div></div>
+    <div class="law-card green"><div class="case-header">People v. Castillo</div><div class="case-meta">STOP & IDENTIFY · Precedent</div><div class="case-text">An officer detained a citizen for extended questioning without reasonable articulable suspicion. The court ruled that mere presence in a high-crime area does not establish RAS, and the detention was unlawful.</div><div class="case-ruling">RULING: Detention unlawful — RAS required for investigatory stop.</div></div>
+    <div class="law-card"><div class="case-header">State v. Okafor</div><div class="case-meta">CONSENT SEARCH · Precedent</div><div class="case-text">A suspect verbally consented to a vehicle search but later claimed coercion. The court held that consent must be voluntary, knowing, and unequivocal. Consent given under implicit duress of officer presence alone is insufficient.</div><div class="case-ruling">RULING: Consent must be demonstrably voluntary to be valid.</div></div>
+    <div class="law-card"><div class="case-header">LSPD v. Officer Davis</div><div class="case-meta">BRADY DISCLOSURE · Internal</div><div class="case-text">An officer withheld exculpatory evidence from the prosecutor in a murder trial. The court held this was a Brady violation and overturned the conviction. Officer Davis was terminated and prosecuted for obstruction.</div><div class="case-ruling">RULING: All exculpatory evidence must be disclosed to defense — Brady obligation.</div></div>
+  </div>
+</section>
+
+<!-- ═══ LEGAL DEFINITIONS ═══ -->
+<section id="legal" class="section">
+  <div class="section-header"><h2>Legal Definitions &amp; Doctrines</h2><span class="tag">Reference</span><div class="section-line"></div></div>
+  <input class="ref-search" type="text" placeholder="Search definitions..." oninput="filterDefs(this.value)" id="defSearch">
+  <div id="defsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem"></div>
+</section>
+
+<!-- ═══ COMP CALCULATOR ═══ -->
+<section id="compcalc" class="section">
+  <div class="section-header"><h2>Compensation Calculator</h2><span class="tag">LSPD Payroll</span><div class="section-line"></div></div>
+  <div class="law-text" style="margin-bottom:1.25rem">Calculate officer compensation including base pay, overtime, hazard pay, and deductions. Results are informational and subject to HR approval.</div>
+  <div class="calc-box">
+    <div class="calc-row">
+      <div class="form-group"><label class="form-label">Rank</label>
+        <select class="form-select" id="calcRank" onchange="calcComp()">
+          <option value="2500">Cadet</option>
+          <option value="3200">Probationary Officer</option>
+          <option value="4000">Officer</option>
+          <option value="4800">Senior Officer</option>
+          <option value="5500">Corporal</option>
+          <option value="6200">Senior Corporal</option>
+          <option value="7000">Sergeant</option>
+          <option value="8500">Lieutenant</option>
+          <option value="10000">Captain</option>
+          <option value="13000">Assistant Chief</option>
+          <option value="15000">Deputy Chief</option>
+          <option value="18000">Chief of Police</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Hours Worked This Week</label>
+        <input class="form-input" type="number" id="calcHours" value="40" min="0" max="168" oninput="calcComp()">
+      </div>
+      <div class="form-group"><label class="form-label">Hazard Pay Incidents</label>
+        <input class="form-input" type="number" id="calcHazard" value="0" min="0" oninput="calcComp()">
+      </div>
+      <div class="form-group"><label class="form-label">Certifications Held</label>
+        <select class="form-select" id="calcCerts" onchange="calcComp()">
+          <option value="0">None</option>
+          <option value="200">1 Cert (+$200)</option>
+          <option value="400">2 Certs (+$400)</option>
+          <option value="600">3 Certs (+$600)</option>
+          <option value="900">4+ Certs (+$900)</option>
+        </select>
+      </div>
+    </div>
+    <div class="calc-row">
+      <div class="form-group"><label class="form-label">Health Insurance Deduction</label>
+        <select class="form-select" id="calcHealth" onchange="calcComp()">
+          <option value="0">None</option>
+          <option value="150">Basic (-$150)</option>
+          <option value="300">Full Coverage (-$300)</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Disciplinary Deduction ($)</label>
+        <input class="form-input" type="number" id="calcDiscipline" value="0" min="0" oninput="calcComp()">
+      </div>
+    </div>
+    <div class="calc-result" id="calcResult">
+      <div class="calc-result-title">Compensation Breakdown</div>
+      <div class="calc-line"><span>Base Weekly Pay</span><span class="calc-val money" id="rBase">$0</span></div>
+      <div class="calc-line"><span>Overtime Pay (hours over 40 @ 1.5x)</span><span class="calc-val money" id="rOT">$0</span></div>
+      <div class="calc-line"><span>Hazard Pay (per incident)</span><span class="calc-val money" id="rHazard">$0</span></div>
+      <div class="calc-line"><span>Certification Bonus</span><span class="calc-val money" id="rCerts">$0</span></div>
+      <div class="calc-line"><span>Health Insurance Deduction</span><span class="calc-val" id="rHealth" style="color:var(--danger)">-$0</span></div>
+      <div class="calc-line"><span>Disciplinary Deduction</span><span class="calc-val" id="rDisc" style="color:var(--danger)">-$0</span></div>
+      <div class="calc-line total"><span>TOTAL COMPENSATION</span><span class="calc-val total" id="rTotal">$0</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Template</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="generateDoc()">⚡ Generate Document</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══ PENAL CODE DATABASE ══ */
+const PENAL_CODES=[
+  {code:'P.C. 187',name:'Murder',cat:'Homicide',sentence:'Life / 25 yrs',fine:'$50,000'},
+  {code:'P.C. 188',name:'Second Degree Murder',cat:'Homicide',sentence:'15 yrs',fine:'$30,000'},
+  {code:'P.C. 192',name:'Voluntary Manslaughter',cat:'Homicide',sentence:'10 yrs',fine:'$20,000'},
+  {code:'P.C. 193',name:'Involuntary Manslaughter',cat:'Homicide',sentence:'5 yrs',fine:'$10,000'},
+  {code:'P.C. 199',name:'Attempted Murder',cat:'Homicide',sentence:'12 yrs',fine:'$25,000'},
+  {code:'P.C. 1001',name:'Simple Assault',cat:'Assault',sentence:'6 months',fine:'$1,500'},
+  {code:'P.C. 1002',name:'Simple Battery',cat:'Assault',sentence:'6 months',fine:'$1,500'},
+  {code:'P.C. 1003',name:'Aggravated Assault',cat:'Assault',sentence:'3 yrs',fine:'$5,000'},
+  {code:'P.C. 1004',name:'Aggravated Battery',cat:'Assault',sentence:'3 yrs',fine:'$5,000'},
+  {code:'P.C. 1005',name:'Simple Assault of a Government Employee',cat:'Assault',sentence:'1 yr',fine:'$3,000'},
+  {code:'P.C. 1006',name:'Aggravated Assault of a Government Employee',cat:'Assault',sentence:'4 yrs',fine:'$7,500'},
+  {code:'P.C. 1007',name:'Assault with a Deadly Weapon',cat:'Assault',sentence:'5 yrs',fine:'$10,000'},
+  {code:'P.C. 1008',name:'Assault with a Firearm',cat:'Assault',sentence:'7 yrs',fine:'$15,000'},
+  {code:'P.C. 1009',name:'Brandishing a Weapon',cat:'Assault',sentence:'1 yr',fine:'$2,500'},
+  {code:'P.C. 1010',name:'Criminal Threats',cat:'Assault',sentence:'1 yr',fine:'$2,000'},
+  {code:'P.C. 1011',name:'Kidnapping',cat:'Assault',sentence:'8 yrs',fine:'$20,000'},
+  {code:'P.C. 1012',name:'False Imprisonment',cat:'Assault',sentence:'2 yrs',fine:'$4,000'},
+  {code:'P.C. 1013',name:'Stalking',cat:'Assault',sentence:'2 yrs',fine:'$3,000'},
+  {code:'P.C. 2001',name:'Petty Theft',cat:'Theft',sentence:'6 months',fine:'$1,000'},
+  {code:'P.C. 2002',name:'Grand Theft',cat:'Theft',sentence:'2 yrs',fine:'$5,000'},
+  {code:'P.C. 2003',name:'Grand Theft Auto',cat:'Theft',sentence:'3 yrs',fine:'$8,000'},
+  {code:'P.C. 2004',name:'Robbery',cat:'Theft',sentence:'5 yrs',fine:'$10,000'},
+  {code:'P.C. 2005',name:'Armed Robbery',cat:'Theft',sentence:'8 yrs',fine:'$20,000'},
+  {code:'P.C. 2006',name:'Carjacking',cat:'Theft',sentence:'6 yrs',fine:'$15,000'},
+  {code:'P.C. 2007',name:'Burglary',cat:'Theft',sentence:'3 yrs',fine:'$7,500'},
+  {code:'P.C. 2008',name:'Commercial Burglary',cat:'Theft',sentence:'4 yrs',fine:'$10,000'},
+  {code:'P.C. 2009',name:'Receiving Stolen Property',cat:'Theft',sentence:'1 yr',fine:'$2,500'},
+  {code:'P.C. 2010',name:'Shoplifting',cat:'Theft',sentence:'3 months',fine:'$500'},
+  {code:'P.C. 2011',name:'Extortion',cat:'Theft',sentence:'4 yrs',fine:'$10,000'},
+  {code:'P.C. 2012',name:'Fraud',cat:'Theft',sentence:'3 yrs',fine:'$8,000'},
+  {code:'P.C. 2013',name:'Identity Theft',cat:'Theft',sentence:'3 yrs',fine:'$7,500'},
+  {code:'P.C. 2014',name:'Embezzlement',cat:'Theft',sentence:'4 yrs',fine:'$12,000'},
+  {code:'P.C. 2015',name:'Bank Robbery',cat:'Theft',sentence:'10 yrs',fine:'$25,000'},
+  {code:'P.C. 3001',name:'Illegal Possession of a Firearm',cat:'Weapons',sentence:'2 yrs',fine:'$5,000'},
+  {code:'P.C. 3002',name:'Possession of an Illegal Weapon',cat:'Weapons',sentence:'2 yrs',fine:'$5,000'},
+  {code:'P.C. 3003',name:'Possession of a Suppressor',cat:'Weapons',sentence:'3 yrs',fine:'$7,500'},
+  {code:'P.C. 3004',name:'Carrying a Concealed Weapon',cat:'Weapons',sentence:'1 yr',fine:'$3,000'},
+  {code:'P.C. 3005',name:'Discharging a Firearm in Public',cat:'Weapons',sentence:'2 yrs',fine:'$5,000'},
+  {code:'P.C. 3006',name:'Felon in Possession of a Firearm',cat:'Weapons',sentence:'5 yrs',fine:'$10,000'},
+  {code:'P.C. 3007',name:'Illegal Weapon Modifications',cat:'Weapons',sentence:'2 yrs',fine:'$4,000'},
+  {code:'P.C. 3008',name:'Possession of an Explosive Device',cat:'Weapons',sentence:'8 yrs',fine:'$20,000'},
+  {code:'P.C. 4001',name:'Possession of a Controlled Substance',cat:'Drugs',sentence:'1 yr',fine:'$3,000'},
+  {code:'P.C. 4002',name:'Possession with Intent to Distribute',cat:'Drugs',sentence:'4 yrs',fine:'$10,000'},
+  {code:'P.C. 4003',name:'Trafficking a Controlled Substance',cat:'Drugs',sentence:'8 yrs',fine:'$20,000'},
+  {code:'P.C. 4004',name:'Manufacturing a Controlled Substance',cat:'Drugs',sentence:'6 yrs',fine:'$15,000'},
+  {code:'P.C. 4005',name:'Possession of Drug Paraphernalia',cat:'Drugs',sentence:'6 months',fine:'$1,000'},
+  {code:'P.C. 4006',name:'Driving Under the Influence',cat:'Drugs',sentence:'1 yr',fine:'$5,000'},
+  {code:'P.C. 4007',name:'Public Intoxication',cat:'Drugs',sentence:'3 months',fine:'$500'},
+  {code:'T.C. 5001',name:'Reckless Driving',cat:'Traffic',sentence:'6 months',fine:'$2,500'},
+  {code:'T.C. 5002',name:'Speeding',cat:'Traffic',sentence:'—',fine:'$500'},
+  {code:'T.C. 5003',name:'Running a Red Light',cat:'Traffic',sentence:'—',fine:'$300'},
+  {code:'T.C. 5004',name:'Failure to Stop',cat:'Traffic',sentence:'6 months',fine:'$1,500'},
+  {code:'T.C. 5005',name:'Evading — Vehicle',cat:'Traffic',sentence:'2 yrs',fine:'$5,000'},
+  {code:'T.C. 5006',name:'Evading — Foot',cat:'Traffic',sentence:'1 yr',fine:'$2,000'},
+  {code:'T.C. 5007',name:'Hit and Run',cat:'Traffic',sentence:'1 yr',fine:'$3,000'},
+  {code:'T.C. 5008',name:'Driving Without a License',cat:'Traffic',sentence:'—',fine:'$1,000'},
+  {code:'T.C. 5009',name:'Driving with Suspended License',cat:'Traffic',sentence:'6 months',fine:'$2,000'},
+  {code:'T.C. 5010',name:'Illegal Vehicle Modifications',cat:'Traffic',sentence:'—',fine:'$750'},
+  {code:'T.C. 5011',name:'Street Racing',cat:'Traffic',sentence:'1 yr',fine:'$3,000'},
+  {code:'T.C. 5012',name:'Failure to Yield to Emergency Vehicle',cat:'Traffic',sentence:'—',fine:'$500'},
+  {code:'P.C. 6001',name:'Trespassing',cat:'Public Order',sentence:'6 months',fine:'$1,000'},
+  {code:'P.C. 6002',name:'Vandalism',cat:'Public Order',sentence:'6 months',fine:'$2,000'},
+  {code:'P.C. 6003',name:'Disturbing the Peace',cat:'Public Order',sentence:'3 months',fine:'$500'},
+  {code:'P.C. 6004',name:'Resisting Arrest',cat:'Public Order',sentence:'1 yr',fine:'$2,000'},
+  {code:'P.C. 6005',name:'Obstruction of Justice',cat:'Public Order',sentence:'2 yrs',fine:'$5,000'},
+  {code:'P.C. 6006',name:'Filing a False Police Report',cat:'Public Order',sentence:'1 yr',fine:'$3,000'},
+  {code:'P.C. 6007',name:'Bribery of a Government Official',cat:'Public Order',sentence:'5 yrs',fine:'$15,000'},
+  {code:'P.C. 6008',name:'Impersonating a Police Officer',cat:'Public Order',sentence:'3 yrs',fine:'$7,500'},
+  {code:'P.C. 6009',name:'Aiding and Abetting',cat:'Public Order',sentence:'= Primary Offender',fine:'Varies'},
+  {code:'P.C. 6010',name:'Accessory After the Fact',cat:'Public Order',sentence:'2 yrs',fine:'$5,000'},
+  {code:'P.C. 6011',name:'Conspiracy',cat:'Public Order',sentence:'3 yrs',fine:'$8,000'},
+  {code:'P.C. 6012',name:'Money Laundering',cat:'Public Order',sentence:'6 yrs',fine:'$20,000'},
+  {code:'P.C. 6013',name:'Tampering with Evidence',cat:'Public Order',sentence:'3 yrs',fine:'$7,500'},
+  {code:'P.C. 6014',name:'Witness Intimidation',cat:'Public Order',sentence:'4 yrs',fine:'$10,000'},
+  {code:'P.C. 6015',name:'Perjury',cat:'Public Order',sentence:'3 yrs',fine:'$7,500'},
+  {code:'P.C. 7001',name:'Arson',cat:'Property',sentence:'6 yrs',fine:'$15,000'},
+  {code:'P.C. 7002',name:'Criminal Damage to Property',cat:'Property',sentence:'1 yr',fine:'$2,500'},
+  {code:'P.C. 7003',name:'Possession of Stolen Property',cat:'Property',sentence:'1 yr',fine:'$2,500'},
+  {code:'P.C. 8001',name:'Gang Activity',cat:'Organized Crime',sentence:'5 yrs',fine:'$12,000'},
+  {code:'P.C. 8002',name:'Racketeering',cat:'Organized Crime',sentence:'10 yrs',fine:'$30,000'},
+  {code:'P.C. 8003',name:'Criminal Enterprise',cat:'Organized Crime',sentence:'12 yrs',fine:'$40,000'},
+  {code:'P.C. 8004',name:'Illegal Street Racing Organization',cat:'Organized Crime',sentence:'5 yrs',fine:'$15,000'},
+];
+
+/* ══ LEGAL DEFINITIONS ══ */
+const LEGAL_DEFS=[
+  {term:'Probable Cause',def:'A reasonable basis to believe a crime has been or is being committed. Required for arrests, search warrants, and certain searches without a warrant.'},
+  {term:'Reasonable Articulable Suspicion (RAS)',def:'A lower standard than probable cause. Allows an officer to briefly detain (but not arrest) a person based on specific, articulable facts suggesting criminal activity.'},
+  {term:'Exigent Circumstances',def:'Emergency situations justifying warrantless search or entry — including imminent danger, hot pursuit of a fleeing felon, or destruction of evidence.'},
+  {term:'Plain View Doctrine',def:'Officers may seize evidence without a warrant if: (1) they are lawfully present, (2) the evidence is in plain view, (3) incriminating nature is immediately apparent.'},
+  {term:'Exclusionary Rule',def:'Evidence obtained in violation of the Fourth Amendment is inadmissible in court. Extends to derivative evidence ("fruit of the poisonous tree").'},
+  {term:'Fruit of the Poisonous Tree',def:'Doctrine that extends the exclusionary rule to evidence indirectly obtained from an illegal search or seizure.'},
+  {term:'Terry Stop',def:'A brief investigatory detention based on reasonable suspicion. An officer may also conduct a limited pat-down for weapons if there is reason to believe the person is armed.'},
+  {term:'Miranda Rights',def:'Warnings required before a custodial interrogation: right to silence, right to attorney, appointed counsel if needed. Failure to Mirandize renders statements inadmissible.'},
+  {term:'Mens Rea',def:'The mental element of a crime — "guilty mind." Most serious crimes require proof that the defendant intended to commit the act (intent, knowledge, recklessness, or negligence).'},
+  {term:'Actus Reus',def:'The physical act or conduct that constitutes the criminal offense. Both actus reus and mens rea must be proven for most crimes.'},
+  {term:'Burden of Proof',def:'The obligation to prove one\'s claim. In criminal cases, the prosecution must prove guilt "beyond a reasonable doubt" — the highest legal standard.'},
+  {term:'Beyond Reasonable Doubt',def:'The standard of proof required to convict in a criminal trial. The evidence must be so convincing that no reasonable person would doubt the defendant\'s guilt.'},
+  {term:'Preponderance of Evidence',def:'The civil standard of proof — more likely than not (>50%). Used in civil suits against the department and protective orders.'},
+  {term:'Curtilage',def:'The area immediately surrounding a home, treated with the same Fourth Amendment protections as the interior of the home.'},
+  {term:'Open Fields Doctrine',def:'Areas beyond the curtilage (open land, fields) are not protected by the Fourth Amendment and may be searched without a warrant.'},
+  {term:'Consent Search',def:'A warrantless search conducted with the voluntary consent of the person or a third party with authority over the property. Consent may be withdrawn at any time.'},
+  {term:'Chain of Custody',def:'The documented sequence of possession, control, transfer, and analysis of evidence. Essential to prove evidence has not been tampered with.'},
+  {term:'Brady Material',def:'Exculpatory evidence material to the guilt or punishment of the defendant. Prosecutors are constitutionally required to disclose Brady material to the defense.'},
+  {term:'Habeas Corpus',def:'A legal action requiring a person in custody to be brought before a court. Protects against illegal and indefinite detention.'},
+  {term:'Double Jeopardy',def:'The constitutional prohibition against prosecuting a person twice for the same offense after acquittal or conviction.'},
+  {term:'Due Process',def:'The constitutional requirement that the government must respect all legal rights owed to a person. Includes notice of charges and a fair hearing.'},
+  {term:'Affirmative Defense',def:'A defense in which the defendant admits the act but argues a legal justification (e.g., self-defense, insanity). The defendant bears the burden of proof.'},
+  {term:'Qualified Immunity',def:'A doctrine protecting government officials from civil liability unless they violated a "clearly established" statutory or constitutional right.'},
+  {term:'Stare Decisis',def:'The legal principle of deciding cases based on precedent — courts follow prior rulings unless there is a compelling reason to deviate.'},
+  {term:'Subpoena',def:'A legal order requiring a person to appear in court or produce documents. Failure to comply may result in contempt of court charges.'},
+  {term:'Hearsay',def:'An out-of-court statement offered to prove the truth of the matter asserted. Generally inadmissible, with numerous exceptions.'},
+  {term:'Immunity',def:'Protection from prosecution in exchange for cooperation or testimony. May be transactional (full) or use immunity (testimony cannot be used against the witness).'},
+  {term:'Arraignment',def:'The first court appearance after arrest where the defendant is formally charged and enters a plea (guilty, not guilty, or no contest).'},
+];
+
+/* ══ CHARGE PICKER STATE ══ */
+const chargePickerState={};
+function initCP(id){if(!chargePickerState[id])chargePickerState[id]=new Set();}
+function toggleCharge(id,code){initCP(id);const s=chargePickerState[id];if(s.has(code))s.delete(code);else s.add(code);renderCP(id);}
+function removeCharge(id,code){initCP(id);chargePickerState[id].delete(code);renderCP(id);}
+function openDropdown(id){const c=document.getElementById('cp_'+id);if(c){c.querySelector('.charge-dropdown').classList.add('open');refreshDD(id);}}
+function onSearchInput(id){refreshDD(id);openDropdown(id);}
+function closeDropdownOnBlur(id){setTimeout(()=>{const c=document.getElementById('cp_'+id);if(c&&!c.contains(document.activeElement))c.querySelector('.charge-dropdown').classList.remove('open');},160);}
+function refreshDD(id){
+  const c=document.getElementById('cp_'+id);if(!c)return;
+  const q=(c.querySelector('.charge-search-input').value||'').toLowerCase();
+  const sel=chargePickerState[id]||new Set();
+  const dd=c.querySelector('.charge-dropdown');
+  const filtered=PENAL_CODES.filter(p=>p.code.toLowerCase().includes(q)||p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));
+  if(!filtered.length){dd.innerHTML='<div class="charge-no-results">No matching charges found.</div>';return;}
+  dd.innerHTML=filtered.map(p=>`<div class="charge-option${sel.has(p.code)?' selected':''}" onclick="toggleCharge('${id}','${p.code.replace(/'/g,"\\'")}')"><span class="co-code">${p.code}</span><span class="co-name">${p.name}</span><span class="co-cat">${p.cat}</span><span class="co-check">${sel.has(p.code)?'✓':''}</span></div>`).join('');
+}
+function renderCP(id){
+  initCP(id);
+  const c=document.getElementById('cp_'+id);if(!c)return;
+  const sel=chargePickerState[id];
+  const cnt=c.querySelector('.cp-count');if(cnt)cnt.textContent=sel.size;
+  const tags=c.querySelector('.charge-tags');
+  if(!sel.size){tags.innerHTML='<span class="charge-empty-hint">No charges added yet.</span>';}
+  else{tags.innerHTML=[...sel].map(code=>{const p=PENAL_CODES.find(x=>x.code===code);const lbl=p?`${p.code} — ${p.name}`:code;return`<span class="charge-tag">${lbl}<button class="charge-tag-remove" onclick="removeCharge('${id}','${code.replace(/'/g,"\\'")}')">✕</button></span>`;}).join('');}
+  refreshDD(id);
+}
+function getChargesText(id){
+  initCP(id);
+  const sel=chargePickerState[id];
+  if(!sel.size)return'None listed.';
+  return[...sel].map(code=>{const p=PENAL_CODES.find(x=>x.code===code);return p?`${p.code} — ${p.name}`:code;}).join('\n');
+}
+function buildCP(id){
+  return`<div class="charge-picker" id="cp_${id}"><div class="charge-picker-header">Charges (Penal Code) &nbsp;<span class="cp-count">0</span></div><input class="charge-search-input" type="text" placeholder="Search Penal Code..." oninput="onSearchInput('${id}')" onfocus="openDropdown('${id}')" onblur="closeDropdownOnBlur('${id}')"><div class="charge-dropdown"></div><div class="charge-tags"><span class="charge-empty-hint">No charges added yet.</span></div></div>`;
+}
+
+/* ══ PLEA STATE ══ */
+const pleaState={};
+function setPlea(id,val){
+  pleaState[id]=val;
+  const c=document.getElementById('plea_'+id);if(!c)return;
+  c.querySelectorAll('.plea-btn').forEach(b=>b.classList.remove('active'));
+  const target=c.querySelector('.plea-btn.'+val.replace(' ','')); if(target)target.classList.add('active');
+}
+function getPlea(id){return pleaState[id]||'Not Entered';}
+function buildPlea(id){
+  return`<div class="form-group span2"><label class="form-label">Suspect Plea</label><div class="plea-group" id="plea_${id}"><button class="plea-btn guilty" onclick="setPlea('${id}','guilty')">GUILTY</button><button class="plea-btn notguilty" onclick="setPlea('${id}','notguilty')">NOT GUILTY</button></div></div>`;
+}
+
+/* ══ TEMPLATES ══ */
+const TEMPLATES=[
+  // ARREST
+  {id:'arrest-report',cat:'arrest',type:'type-arrest',typeLabel:'Arrest',title:'Arrest Report',desc:'Standard LSPD arrest report with penal code charge picker, suspect info, narrative, and plea.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Officer Name & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'officerRank',label:'Rank',type:'select',options:['Cadet','Probationary Officer','Officer','Senior Officer','Corporal','Senior Corporal','Sergeant','Lieutenant','Captain'],span:false},
+      {id:'suspectName',label:'Suspect Name',type:'text',placeholder:'John Doe',span:false},
+      {id:'suspectDOB',label:'DOB / Description',type:'text',placeholder:'01/01/1990, M, 6\'1, Brown hair',span:false},
+      {id:'arrestDate',label:'Date & Time of Arrest',type:'text',placeholder:'06/01/2025 · 14:32',span:false},
+      {id:'arrestLoc',label:'Location of Arrest',type:'text',placeholder:'Vinewood Blvd, Los Santos',span:false},
+      {id:'charges',type:'charges',span:true},
+      {id:'plea',type:'plea',span:true},
+      {id:'narrative',label:'Narrative / Incident Summary',type:'textarea',placeholder:'Describe the incident in detail...',span:true},
+      {id:'evidence',label:'Evidence Collected',type:'textarea',placeholder:'List any evidence seized...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+         OFFICIAL ARREST REPORT
+═══════════════════════════════════════════
+REPORT FILED BY : ${f.officerName||'N/A'}
+RANK            : ${f.officerRank||'N/A'}
+DATE / TIME     : ${f.arrestDate||'N/A'}
+LOCATION        : ${f.arrestLoc||'N/A'}
+───────────────────────────────────────────
+SUSPECT INFO
+───────────────────────────────────────────
+NAME            : ${f.suspectName||'N/A'}
+DOB / DESC      : ${f.suspectDOB||'N/A'}
+───────────────────────────────────────────
+CHARGES
+───────────────────────────────────────────
+${f.charges||'None Listed'}
+───────────────────────────────────────────
+SUSPECT PLEA    : ${f.plea||'Not Entered'}
+───────────────────────────────────────────
+NARRATIVE
+───────────────────────────────────────────
+${f.narrative||'No narrative provided.'}
+───────────────────────────────────────────
+EVIDENCE
+───────────────────────────────────────────
+${f.evidence||'None.'}
+═══════════════════════════════════════════
+          LSPD OFFICIAL DOCUMENT
+═══════════════════════════════════════════`
+  },
+  // OIS
+  {id:'ois',cat:'report',type:'type-arrest',typeLabel:'OIS',title:'Officer Involved Shooting (OIS)',desc:'Required after any officer-involved shooting. Filed with Internal Affairs within 24 hours.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Officer Name & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'officerRank',label:'Rank',type:'select',options:['Cadet','Probationary Officer','Officer','Senior Officer','Corporal','Senior Corporal','Sergeant','Lieutenant','Captain'],span:false},
+      {id:'date',label:'Date & Time of Incident',type:'text',placeholder:'06/01/2025 · 21:15',span:false},
+      {id:'location',label:'Location',type:'text',placeholder:'LSIA Freeway, near junction',span:false},
+      {id:'subjectName',label:'Subject Name(s)',type:'text',placeholder:'John Doe (deceased) / Jane Doe',span:false},
+      {id:'subjectStatus',label:'Subject Status',type:'select',options:['Deceased','Injured — Hospitalized','Injured — Treated on Scene','Uninjured'],span:false},
+      {id:'firearmUsed',label:'Weapon Used by Officer',type:'text',placeholder:'Service Pistol — Glock 17 / Patrol Rifle',span:false},
+      {id:'roundsFired',label:'Rounds Fired',type:'text',placeholder:'3 rounds fired, 2 strikes',span:false},
+      {id:'subjectArmed',label:'Was Subject Armed?',type:'select',options:['Yes — Firearm','Yes — Knife/Blade','Yes — Other Weapon','No — Unarmed','Unknown'],span:false},
+      {id:'supervisorName',label:'Responding Supervisor',type:'text',placeholder:'Sergeant M. Davis #2011',span:false},
+      {id:'witnessOfficers',label:'Witness Officers Present',type:'text',placeholder:'Officer R. Torres #1850',span:true},
+      {id:'threatlevel',label:'Immediate Threat Description',type:'textarea',placeholder:'Describe the specific threat that justified use of lethal force...',span:true},
+      {id:'narrative',label:'Full Narrative',type:'textarea',placeholder:'Detailed account of all events leading to and including the shooting...',span:true},
+      {id:'medicalResponse',label:'Medical Response',type:'text',placeholder:'EMS dispatched / Subject transported to LSMC',span:true},
+      {id:'iaNotified',label:'IA Notification Time',type:'text',placeholder:'IA notified at 21:45 by SGT Davis',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+   LOS SANTOS POLICE DEPARTMENT
+    OFFICER INVOLVED SHOOTING REPORT
+═══════════════════════════════════════════
+REPORTING OFFICER : ${f.officerName||'N/A'}
+RANK              : ${f.officerRank||'N/A'}
+DATE / TIME       : ${f.date||'N/A'}
+LOCATION          : ${f.location||'N/A'}
+───────────────────────────────────────────
+SUBJECT(S)        : ${f.subjectName||'N/A'}
+SUBJECT STATUS    : ${f.subjectStatus||'N/A'}
+SUBJECT ARMED     : ${f.subjectArmed||'N/A'}
+───────────────────────────────────────────
+WEAPON USED       : ${f.firearmUsed||'N/A'}
+ROUNDS FIRED      : ${f.roundsFired||'N/A'}
+───────────────────────────────────────────
+SUPERVISOR        : ${f.supervisorName||'N/A'}
+WITNESS OFFICERS  : ${f.witnessOfficers||'N/A'}
+───────────────────────────────────────────
+IMMEDIATE THREAT
+───────────────────────────────────────────
+${f.threatlevel||'Not provided.'}
+───────────────────────────────────────────
+FULL NARRATIVE
+───────────────────────────────────────────
+${f.narrative||'Not provided.'}
+───────────────────────────────────────────
+MEDICAL RESPONSE  : ${f.medicalResponse||'N/A'}
+IA NOTIFICATION   : ${f.iaNotified||'N/A'}
+═══════════════════════════════════════════
+  MUST BE SUBMITTED TO IA WITHIN 24 HRS
+═══════════════════════════════════════════`
+  },
+  // TRAFFIC CITATION
+  {id:'traffic-citation',cat:'report',type:'type-report',typeLabel:'Report',title:'Traffic Citation',desc:'Issue a formal traffic citation. Includes vehicle info, violations with TC codes, and fines.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Issuing Officer & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'date',label:'Date & Time',type:'text',placeholder:'06/01/2025 · 11:00',span:false},
+      {id:'driverName',label:'Driver Name',type:'text',placeholder:'Jane Doe',span:false},
+      {id:'driverId',label:'Driver License / ID',type:'text',placeholder:'DL#: LS-498201',span:false},
+      {id:'vehicle',label:'Vehicle (Make/Model/Color)',type:'text',placeholder:'Red Vapid Dominator GT',span:false},
+      {id:'plate',label:'License Plate',type:'text',placeholder:'7ABC234',span:false},
+      {id:'speed',label:'Speed (if applicable)',type:'text',placeholder:'85mph in 55mph zone',span:false},
+      {id:'location',label:'Location of Stop',type:'text',placeholder:'Olympic Freeway, near LSIA',span:false},
+      {id:'violation',label:'Violation(s) — TC Code',type:'textarea',placeholder:'T.C. 5001 — Reckless Driving\nT.C. 5002 — Speeding',span:true},
+      {id:'fine',label:'Total Fine Issued ($)',type:'text',placeholder:'$3,000',span:false},
+      {id:'points',label:'License Points Added',type:'text',placeholder:'3 points',span:false},
+      {id:'vehicleImpound',label:'Vehicle Impounded?',type:'select',options:['No','Yes — LSPD Impound Lot','Yes — Private Tow'],span:false},
+      {id:'notes',label:'Additional Notes',type:'text',placeholder:'Driver was cooperative. No further action.',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+          TRAFFIC CITATION
+═══════════════════════════════════════════
+ISSUING OFFICER : ${f.officerName||'N/A'}
+DATE / TIME     : ${f.date||'N/A'}
+LOCATION        : ${f.location||'N/A'}
+───────────────────────────────────────────
+DRIVER          : ${f.driverName||'N/A'}
+LICENSE / ID    : ${f.driverId||'N/A'}
+VEHICLE         : ${f.vehicle||'N/A'}
+PLATE           : ${f.plate||'N/A'}
+SPEED           : ${f.speed||'N/A'}
+───────────────────────────────────────────
+VIOLATION(S)
+───────────────────────────────────────────
+${f.violation||'None listed.'}
+───────────────────────────────────────────
+FINE ISSUED     : ${f.fine||'N/A'}
+LICENSE POINTS  : ${f.points||'N/A'}
+VEHICLE IMPOUND : ${f.vehicleImpound||'No'}
+───────────────────────────────────────────
+NOTES
+───────────────────────────────────────────
+${f.notes||'None.'}
+═══════════════════════════════════════════`
+  },
+  // SUBPOENA
+  {id:'subpoena',cat:'legal',type:'type-legal',typeLabel:'Legal',title:'Subpoena',desc:'Legal order requiring a person to appear in court or produce documents. Issued by command/DOJ.',updated:'Jun 2025',access:'LT+',
+    fields:[
+      {id:'issuedBy',label:'Issued By (Officer / DA)',type:'text',placeholder:'Lt. R. Jones #3050 / DA Harris',span:false},
+      {id:'courtDate',label:'Court Date & Time',type:'text',placeholder:'06/15/2025 · 10:00 AM',span:false},
+      {id:'subjectName',label:'Subject Name (Recipient)',type:'text',placeholder:'John Doe',span:false},
+      {id:'subjectAddress',label:'Subject Address / Contact',type:'text',placeholder:'Unit 4B, Rockford Hills',span:false},
+      {id:'caseRef',label:'Case Reference / Docket #',type:'text',placeholder:'LSPD-2025-0045',span:false},
+      {id:'courtRoom',label:'Court Room / Location',type:'text',placeholder:'Los Santos Superior Court, Room 3',span:false},
+      {id:'type',label:'Type of Subpoena',type:'select',options:['Ad Testificandum — To Testify','Duces Tecum — To Produce Documents','Both'],span:false},
+      {id:'documentsRequired',label:'Documents / Evidence Required',type:'textarea',placeholder:'List specific documents, records, or items required...',span:true},
+      {id:'reason',label:'Reason for Subpoena',type:'textarea',placeholder:'Brief statement of relevance to the case...',span:true},
+      {id:'penalty',label:'Penalty for Non-Compliance',type:'text',placeholder:'Contempt of Court — Arrest Warrant to be issued',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+              SUBPOENA
+═══════════════════════════════════════════
+THE PEOPLE OF SAN ANDREAS
+       vs / In the matter of:
+CASE REF        : ${f.caseRef||'N/A'}
+───────────────────────────────────────────
+TO              : ${f.subjectName||'N/A'}
+ADDRESS         : ${f.subjectAddress||'N/A'}
+TYPE            : ${f.type||'N/A'}
+───────────────────────────────────────────
+YOU ARE HEREBY COMMANDED to appear before:
+COURT / ROOM    : ${f.courtRoom||'N/A'}
+DATE & TIME     : ${f.courtDate||'N/A'}
+───────────────────────────────────────────
+DOCUMENTS / EVIDENCE REQUIRED
+───────────────────────────────────────────
+${f.documentsRequired||'None specified.'}
+───────────────────────────────────────────
+REASON FOR ISSUANCE
+───────────────────────────────────────────
+${f.reason||'Not provided.'}
+───────────────────────────────────────────
+NON-COMPLIANCE  : ${f.penalty||'Contempt of Court'}
+ISSUED BY       : ${f.issuedBy||'N/A'}
+═══════════════════════════════════════════
+  FAILURE TO COMPLY MAY RESULT IN ARREST
+═══════════════════════════════════════════`
+  },
+  // INVESTIGATION REPORT
+  {id:'investigation',cat:'report',type:'type-report',typeLabel:'Report',title:'Investigation Report',desc:'Detective investigation report. Documents suspects, evidence leads, interviews, and case status.',updated:'Jun 2025',access:'Detective+',
+    fields:[
+      {id:'detectiveName',label:'Lead Detective & Badge',type:'text',placeholder:'Det. J. Smith #1042',span:false},
+      {id:'caseNum',label:'Case Number',type:'text',placeholder:'LSPD-INV-2025-0088',span:false},
+      {id:'openDate',label:'Case Opened',type:'text',placeholder:'06/01/2025',span:false},
+      {id:'caseStatus',label:'Case Status',type:'select',options:['Active — Ongoing','Active — Awaiting Evidence','Suspended — Insufficient Evidence','Closed — Solved','Closed — Unsolved','Referred to DA'],span:false},
+      {id:'crimeType',label:'Crime Type',type:'text',placeholder:'Homicide / Drug Trafficking / Robbery',span:false},
+      {id:'location',label:'Crime Scene Location',type:'text',placeholder:'Rockford Hills, 4th & Main',span:false},
+      {id:'victims',label:'Victim(s)',type:'text',placeholder:'John Doe (DOB: 01/01/1990)',span:true},
+      {id:'suspects',label:'Suspect(s) / Persons of Interest',type:'textarea',placeholder:'List all suspects with description...',span:true},
+      {id:'evidence',label:'Physical Evidence',type:'textarea',placeholder:'List all collected evidence with item numbers...',span:true},
+      {id:'interviews',label:'Witness / Suspect Interviews',type:'textarea',placeholder:'Summarize each interview...',span:true},
+      {id:'leads',label:'Active Leads',type:'textarea',placeholder:'Describe current investigative leads...',span:true},
+      {id:'narrative',label:'Investigation Narrative',type:'textarea',placeholder:'Full chronological account of the investigation...',span:true},
+      {id:'nextSteps',label:'Next Steps / Actions Required',type:'textarea',placeholder:'What needs to be done next...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+    DETECTIVE INVESTIGATION REPORT
+═══════════════════════════════════════════
+LEAD DETECTIVE  : ${f.detectiveName||'N/A'}
+CASE NUMBER     : ${f.caseNum||'N/A'}
+OPENED          : ${f.openDate||'N/A'}
+STATUS          : ${f.caseStatus||'N/A'}
+CRIME TYPE      : ${f.crimeType||'N/A'}
+SCENE LOCATION  : ${f.location||'N/A'}
+───────────────────────────────────────────
+VICTIM(S)
+───────────────────────────────────────────
+${f.victims||'N/A'}
+───────────────────────────────────────────
+SUSPECT(S) / POI
+───────────────────────────────────────────
+${f.suspects||'None identified.'}
+───────────────────────────────────────────
+PHYSICAL EVIDENCE
+───────────────────────────────────────────
+${f.evidence||'None collected.'}
+───────────────────────────────────────────
+INTERVIEWS CONDUCTED
+───────────────────────────────────────────
+${f.interviews||'None conducted.'}
+───────────────────────────────────────────
+ACTIVE LEADS
+───────────────────────────────────────────
+${f.leads||'None.'}
+───────────────────────────────────────────
+INVESTIGATION NARRATIVE
+───────────────────────────────────────────
+${f.narrative||'Not provided.'}
+───────────────────────────────────────────
+NEXT STEPS
+───────────────────────────────────────────
+${f.nextSteps||'TBD.'}
+═══════════════════════════════════════════`
+  },
+  // COLD CASE
+  {id:'coldcase',cat:'report',type:'type-report',typeLabel:'Report',title:'Cold Case Report',desc:'File a case as a cold case with full documentation for future review and re-investigation.',updated:'Jun 2025',access:'Detective+',
+    fields:[
+      {id:'detectiveName',label:'Filing Detective & Badge',type:'text',placeholder:'Det. J. Smith #1042',span:false},
+      {id:'caseNum',label:'Original Case Number',type:'text',placeholder:'LSPD-2022-0014',span:false},
+      {id:'originalDate',label:'Original Incident Date',type:'text',placeholder:'03/12/2022',span:false},
+      {id:'filedDate',label:'Cold Case Filed Date',type:'text',placeholder:'06/01/2025',span:false},
+      {id:'crimeType',label:'Crime Type',type:'text',placeholder:'Homicide',span:false},
+      {id:'location',label:'Original Crime Scene',type:'text',placeholder:'Sandy Shores Airfield',span:false},
+      {id:'victims',label:'Victim(s)',type:'text',placeholder:'John Doe (unidentified)',span:true},
+      {id:'suspects',label:'Known Suspects / POI',type:'textarea',placeholder:'List any identified suspects...',span:true},
+      {id:'evidence',label:'Evidence on File',type:'textarea',placeholder:'List all preserved evidence items...',span:true},
+      {id:'reasonCold',label:'Reason Case Went Cold',type:'textarea',placeholder:'Why was investigation suspended?',span:true},
+      {id:'reviewNotes',label:'Review Notes / New Leads',type:'textarea',placeholder:'Any new information since original investigation...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+           COLD CASE FILE
+═══════════════════════════════════════════
+FILING DETECTIVE : ${f.detectiveName||'N/A'}
+CASE NUMBER      : ${f.caseNum||'N/A'}
+ORIGINAL DATE    : ${f.originalDate||'N/A'}
+FILED AS COLD    : ${f.filedDate||'N/A'}
+CRIME TYPE       : ${f.crimeType||'N/A'}
+SCENE LOCATION   : ${f.location||'N/A'}
+───────────────────────────────────────────
+VICTIM(S)        : ${f.victims||'N/A'}
+───────────────────────────────────────────
+KNOWN SUSPECTS / POI
+───────────────────────────────────────────
+${f.suspects||'None identified.'}
+───────────────────────────────────────────
+EVIDENCE ON FILE
+───────────────────────────────────────────
+${f.evidence||'None.'}
+───────────────────────────────────────────
+REASON CASE WENT COLD
+───────────────────────────────────────────
+${f.reasonCold||'Not documented.'}
+───────────────────────────────────────────
+REVIEW NOTES / NEW LEADS
+───────────────────────────────────────────
+${f.reviewNotes||'None.'}
+═══════════════════════════════════════════
+  STATUS: COLD — PENDING RE-INVESTIGATION
+═══════════════════════════════════════════`
+  },
+  // SWAT AFTER ACTION
+  {id:'swat-aar',cat:'internal',type:'type-internal',typeLabel:'Internal',title:'SWAT After Action Report',desc:'Post-operation report for SWAT/tactical unit deployments. Required after every activation.',updated:'Jun 2025',access:'SWAT / SGT+',
+    fields:[
+      {id:'incidentCommander',label:'Incident Commander',type:'text',placeholder:'Lt. R. Jones #3050',span:false},
+      {id:'date',label:'Operation Date & Time',type:'text',placeholder:'06/01/2025 · 18:30',span:false},
+      {id:'operationName',label:'Operation Name / Ref',type:'text',placeholder:'Operation Blackout / REF-2025-SW01',span:false},
+      {id:'activationType',label:'Activation Type',type:'select',options:['Hostage Situation','Barricaded Suspect','High-Risk Warrant Service','Active Shooter','Explosive Device','Gang Raid','Officer Down Response'],span:false},
+      {id:'location',label:'Location',type:'text',placeholder:'Rockford Hills Mansion, 12 Alta St',span:false},
+      {id:'teamMembers',label:'Team Members Deployed',type:'textarea',placeholder:'List all officers by name and badge...',span:true},
+      {id:'objectives',label:'Mission Objectives',type:'textarea',placeholder:'What was the operation intended to achieve?',span:true},
+      {id:'subjectInfo',label:'Subject(s) Info',type:'textarea',placeholder:'Description, armed status, threat level...',span:true},
+      {id:'outcome',label:'Operation Outcome',type:'select',options:['Success — Subject(s) Arrested','Success — Threat Neutralized','Subject Fled — Escaped','Partial Success','Failure — Aborted','Ongoing / Follow-up Required'],span:false},
+      {id:'casualties',label:'Casualties / Injuries',type:'text',placeholder:'None / Officer Smith — minor laceration',span:false},
+      {id:'roundsFired',label:'Munitions Expended',type:'text',placeholder:'14x 5.56mm, 2x flashbang, 1x CS gas',span:true},
+      {id:'narrative',label:'Operational Narrative',type:'textarea',placeholder:'Chronological account of the operation...',span:true},
+      {id:'lessonsLearned',label:'Lessons Learned / Recommendations',type:'textarea',placeholder:'What could be improved?',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+       SWAT AFTER ACTION REPORT
+═══════════════════════════════════════════
+INCIDENT COMMANDER : ${f.incidentCommander||'N/A'}
+DATE / TIME        : ${f.date||'N/A'}
+OPERATION REF      : ${f.operationName||'N/A'}
+ACTIVATION TYPE    : ${f.activationType||'N/A'}
+LOCATION           : ${f.location||'N/A'}
+───────────────────────────────────────────
+TEAM DEPLOYED
+───────────────────────────────────────────
+${f.teamMembers||'N/A'}
+───────────────────────────────────────────
+MISSION OBJECTIVES
+───────────────────────────────────────────
+${f.objectives||'N/A'}
+───────────────────────────────────────────
+SUBJECT INFO
+───────────────────────────────────────────
+${f.subjectInfo||'N/A'}
+───────────────────────────────────────────
+OUTCOME           : ${f.outcome||'N/A'}
+CASUALTIES        : ${f.casualties||'None'}
+MUNITIONS USED    : ${f.roundsFired||'None'}
+───────────────────────────────────────────
+OPERATIONAL NARRATIVE
+───────────────────────────────────────────
+${f.narrative||'Not provided.'}
+───────────────────────────────────────────
+LESSONS LEARNED
+───────────────────────────────────────────
+${f.lessonsLearned||'None noted.'}
+═══════════════════════════════════════════`
+  },
+  // MASTERFILE
+  {id:'masterfile',cat:'intel',type:'type-intel',typeLabel:'Intel',title:'Subject Masterfile',desc:'Comprehensive intelligence file on a known offender. Centralizes criminal history, associations, and threat level.',updated:'Jun 2025',access:'Detective / SGT+',
+    fields:[
+      {id:'filedBy',label:'Filed By & Badge',type:'text',placeholder:'Det. J. Smith #1042',span:false},
+      {id:'fileDate',label:'File Created Date',type:'text',placeholder:'06/01/2025',span:false},
+      {id:'subjectName',label:'Subject Full Name',type:'text',placeholder:'John Michael Doe',span:false},
+      {id:'subjectDOB',label:'Date of Birth',type:'text',placeholder:'01/01/1985',span:false},
+      {id:'subjectDesc',label:'Physical Description',type:'text',placeholder:'M, 6\'1, 190lbs, Brown hair, Tattoo: left neck',span:false},
+      {id:'subjectAddress',label:'Last Known Address',type:'text',placeholder:'Unit 4B, Vinewood Hills',span:false},
+      {id:'aliases',label:'Known Aliases',type:'text',placeholder:'"Johnny D" / "Mikey"',span:false},
+      {id:'associates',label:'Known Associates',type:'text',placeholder:'Jane Doe, Carlos Reyes',span:false},
+      {id:'gangAffiliation',label:'Gang / Organization Affiliation',type:'text',placeholder:'Vagos / Ballas / None',span:false},
+      {id:'threatLevel',label:'Threat Level',type:'select',options:['Low','Medium','High','Extreme — Armed & Dangerous'],span:false},
+      {id:'priorArrests',label:'Prior Arrest History',type:'textarea',placeholder:'List prior arrests with dates and charges...',span:true},
+      {id:'vehicles',label:'Known Vehicles',type:'textarea',placeholder:'2022 Bravado Buffalo — 4XYZ789',span:true},
+      {id:'intelligence',label:'Intelligence Notes',type:'textarea',placeholder:'Behavioral patterns, frequented locations, criminal MO...',span:true},
+      {id:'warrants',label:'Active Warrants',type:'text',placeholder:'None / Arrest Warrant — P.C. 187',span:true},
+    ],
+    generate:(f)=>`╔═══════════════════════════════════════════╗
+║   LOS SANTOS POLICE DEPARTMENT           ║
+║         SUBJECT MASTERFILE               ║
+╚═══════════════════════════════════════════╝
+FILED BY        : ${f.filedBy||'N/A'}
+FILE DATE       : ${f.fileDate||'N/A'}
+─────────────────────────────────────────────
+SUBJECT IDENTITY
+─────────────────────────────────────────────
+FULL NAME       : ${f.subjectName||'N/A'}
+DATE OF BIRTH   : ${f.subjectDOB||'N/A'}
+DESCRIPTION     : ${f.subjectDesc||'N/A'}
+LAST ADDRESS    : ${f.subjectAddress||'N/A'}
+ALIASES         : ${f.aliases||'None'}
+─────────────────────────────────────────────
+ASSOCIATIONS
+─────────────────────────────────────────────
+ASSOCIATES      : ${f.associates||'None'}
+AFFILIATION     : ${f.gangAffiliation||'None'}
+THREAT LEVEL    : ${f.threatLevel||'N/A'}
+─────────────────────────────────────────────
+PRIOR ARRESTS
+─────────────────────────────────────────────
+${f.priorArrests||'None on file.'}
+─────────────────────────────────────────────
+KNOWN VEHICLES
+─────────────────────────────────────────────
+${f.vehicles||'None known.'}
+─────────────────────────────────────────────
+INTELLIGENCE NOTES
+─────────────────────────────────────────────
+${f.intelligence||'None.'}
+─────────────────────────────────────────────
+ACTIVE WARRANTS : ${f.warrants||'None'}
+╔═══════════════════════════════════════════╗
+║         LSPD INTELLIGENCE FILE            ║
+╚═══════════════════════════════════════════╝`
+  },
+  // EVIDENCE REPORT
+  {id:'evidence',cat:'report',type:'type-report',typeLabel:'Report',title:'Evidence Report',desc:'Formal chain of custody evidence report for submitting items to the LSPD evidence vault.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Submitting Officer & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'date',label:'Date & Time of Submission',type:'text',placeholder:'06/01/2025 · 23:00',span:false},
+      {id:'caseNum',label:'Related Case Number',type:'text',placeholder:'LSPD-2025-0045',span:false},
+      {id:'suspects',label:'Related Suspect(s)',type:'text',placeholder:'John Doe',span:false},
+      {id:'collectionLoc',label:'Collection Location',type:'text',placeholder:'Rockford Hills, near dumpster',span:false},
+      {id:'collectionTime',label:'Time of Collection',type:'text',placeholder:'22:30',span:false},
+      {id:'items',label:'Evidence Items',type:'textarea',placeholder:'Item 001 — Glock 17 (serial #G17-224455)\nItem 002 — 50g white powder (suspected narcotics)\nItem 003 — Mobile phone (Samsung)',span:true},
+      {id:'packaging',label:'Packaging / Storage Method',type:'text',placeholder:'Sealed evidence bags, logged at front desk',span:false},
+      {id:'chainOfCustody',label:'Chain of Custody',type:'textarea',placeholder:'Collected by: Officer Smith\nTransported by: Officer Smith\nReceived by: Evidence Officer Williams',span:true},
+      {id:'notes',label:'Additional Notes',type:'textarea',placeholder:'Any notes on condition, context, or special handling...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+          EVIDENCE REPORT
+═══════════════════════════════════════════
+SUBMITTED BY    : ${f.officerName||'N/A'}
+SUBMISSION DATE : ${f.date||'N/A'}
+CASE NUMBER     : ${f.caseNum||'N/A'}
+RELATED SUSPECT : ${f.suspects||'N/A'}
+COLLECTION LOC  : ${f.collectionLoc||'N/A'}
+COLLECTION TIME : ${f.collectionTime||'N/A'}
+───────────────────────────────────────────
+EVIDENCE ITEMS
+───────────────────────────────────────────
+${f.items||'None listed.'}
+───────────────────────────────────────────
+PACKAGING METHOD : ${f.packaging||'N/A'}
+───────────────────────────────────────────
+CHAIN OF CUSTODY
+───────────────────────────────────────────
+${f.chainOfCustody||'Not documented.'}
+───────────────────────────────────────────
+NOTES
+───────────────────────────────────────────
+${f.notes||'None.'}
+═══════════════════════════════════════════`
+  },
+  // K9 RECORD
+  {id:'k9',cat:'report',type:'type-report',typeLabel:'K9',title:'K9 After Action Record',desc:'Post-deployment record for K9 units. Documents deployment details, handler, finds, and injuries.',updated:'Jun 2025',access:'K9 Officers',
+    fields:[
+      {id:'handlerName',label:'K9 Handler & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'k9Name',label:'K9 Unit Name',type:'text',placeholder:'Rex / Axel / Bruno',span:false},
+      {id:'k9Breed',label:'K9 Breed / Certification',type:'text',placeholder:'German Shepherd — Narcotics / Patrol',span:false},
+      {id:'date',label:'Deployment Date & Time',type:'text',placeholder:'06/01/2025 · 19:45',span:false},
+      {id:'deploymentType',label:'Deployment Type',type:'select',options:['Narcotics Search','Building / Area Search','Suspect Apprehension','Tracking','Explosive Detection','Public Demo / Community Event'],span:false},
+      {id:'location',label:'Deployment Location',type:'text',placeholder:'Vespucci Canals, beneath bridge',span:false},
+      {id:'deployingOfficer',label:'Requesting Officer / Supervisor',type:'text',placeholder:'Sergeant M. Davis #2011',span:false},
+      {id:'finds',label:'Finds / Alerts',type:'textarea',placeholder:'K9 alerted on vehicle center console — 40g narcotics found.',span:true},
+      {id:'apprehensions',label:'Apprehensions (if any)',type:'text',placeholder:'Subject John Doe — bite applied, suspect restrained',span:true},
+      {id:'k9Injuries',label:'K9 Injuries',type:'text',placeholder:'None / Minor — treated by handler',span:false},
+      {id:'handlerInjuries',label:'Handler Injuries',type:'text',placeholder:'None',span:false},
+      {id:'notes',label:'Additional Notes',type:'textarea',placeholder:'Any observations about K9 performance or health...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+        K9 AFTER ACTION RECORD
+═══════════════════════════════════════════
+K9 HANDLER      : ${f.handlerName||'N/A'}
+K9 UNIT         : ${f.k9Name||'N/A'}
+BREED / CERT    : ${f.k9Breed||'N/A'}
+DATE / TIME     : ${f.date||'N/A'}
+DEPLOYMENT TYPE : ${f.deploymentType||'N/A'}
+LOCATION        : ${f.location||'N/A'}
+REQUESTED BY    : ${f.deployingOfficer||'N/A'}
+───────────────────────────────────────────
+FINDS / ALERTS
+───────────────────────────────────────────
+${f.finds||'No alerts.'}
+───────────────────────────────────────────
+APPREHENSIONS   : ${f.apprehensions||'None'}
+───────────────────────────────────────────
+K9 INJURIES     : ${f.k9Injuries||'None'}
+HANDLER INJURIES: ${f.handlerInjuries||'None'}
+───────────────────────────────────────────
+NOTES
+───────────────────────────────────────────
+${f.notes||'None.'}
+═══════════════════════════════════════════`
+  },
+  // GANG FILE
+  {id:'gangfile',cat:'intel',type:'type-intel',typeLabel:'Intel',title:'Gang Intelligence File',desc:'Document a criminal gang or organized group — members, territory, criminal activity, and threat assessment.',updated:'Jun 2025',access:'Detective / SGT+',
+    fields:[
+      {id:'filedBy',label:'Filed By & Badge',type:'text',placeholder:'Det. J. Smith #1042',span:false},
+      {id:'fileDate',label:'Date Filed',type:'text',placeholder:'06/01/2025',span:false},
+      {id:'gangName',label:'Gang / Organization Name',type:'text',placeholder:'Los Santos Vagos',span:false},
+      {id:'gangColor',label:'Colors / Identifiers',type:'text',placeholder:'Yellow — "V" hand sign / tags',span:false},
+      {id:'territory',label:'Known Territory',type:'text',placeholder:'East Vinewood, Jamestown St',span:false},
+      {id:'size',label:'Estimated Membership',type:'text',placeholder:'~30 active members',span:false},
+      {id:'threatLevel',label:'Threat Level',type:'select',options:['Low','Medium','High','Extreme'],span:false},
+      {id:'leadership',label:'Known Leadership',type:'textarea',placeholder:'List known leaders and their roles...',span:true},
+      {id:'members',label:'Known Members',type:'textarea',placeholder:'List confirmed members...',span:true},
+      {id:'activities',label:'Criminal Activities',type:'textarea',placeholder:'Drug trafficking, armed robbery, extortion...',span:true},
+      {id:'vehicles',label:'Known Vehicles',type:'textarea',placeholder:'List gang-associated vehicles...',span:true},
+      {id:'intelligence',label:'Intelligence / Notes',type:'textarea',placeholder:'Operational patterns, meeting locations, communication methods...',span:true},
+    ],
+    generate:(f)=>`╔═══════════════════════════════════════════╗
+║   LOS SANTOS POLICE DEPARTMENT           ║
+║       GANG INTELLIGENCE FILE             ║
+╚═══════════════════════════════════════════╝
+FILED BY          : ${f.filedBy||'N/A'}
+DATE FILED        : ${f.fileDate||'N/A'}
+─────────────────────────────────────────────
+GANG              : ${f.gangName||'N/A'}
+COLORS / ID       : ${f.gangColor||'N/A'}
+TERRITORY         : ${f.territory||'N/A'}
+EST. MEMBERSHIP   : ${f.size||'N/A'}
+THREAT LEVEL      : ${f.threatLevel||'N/A'}
+─────────────────────────────────────────────
+LEADERSHIP
+─────────────────────────────────────────────
+${f.leadership||'Unknown.'}
+─────────────────────────────────────────────
+KNOWN MEMBERS
+─────────────────────────────────────────────
+${f.members||'None confirmed.'}
+─────────────────────────────────────────────
+CRIMINAL ACTIVITIES
+─────────────────────────────────────────────
+${f.activities||'None documented.'}
+─────────────────────────────────────────────
+KNOWN VEHICLES
+─────────────────────────────────────────────
+${f.vehicles||'None.'}
+─────────────────────────────────────────────
+INTELLIGENCE NOTES
+─────────────────────────────────────────────
+${f.intelligence||'None.'}
+╔═══════════════════════════════════════════╗
+║         LSPD INTELLIGENCE FILE            ║
+╚═══════════════════════════════════════════╝`
+  },
+  // WANTED POSTER
+  {id:'wanted',cat:'notice',type:'type-notice',typeLabel:'Notice',title:'Wanted Poster',desc:'Generate a BOLO / Wanted Poster for a suspect. Post to department Discord.',updated:'Jun 2025',access:'SGT+',
+    fields:[
+      {id:'officerName',label:'Issued By & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'date',label:'Date Issued',type:'text',placeholder:'06/01/2025',span:false},
+      {id:'suspectName',label:'Suspect Name',type:'text',placeholder:'John Doe / UNKNOWN',span:false},
+      {id:'aliases',label:'Aliases',type:'text',placeholder:'"Johnny D"',span:false},
+      {id:'suspectDesc',label:'Physical Description',type:'textarea',placeholder:'M, 6\'1, 190lbs, Brown hair, Blue eyes. Scar on left cheek. Tattoo: dragon on right forearm.',span:true},
+      {id:'lastSeen',label:'Last Known Location',type:'text',placeholder:'Vinewood Hills, 2025-06-01 at 18:00',span:false},
+      {id:'vehicle',label:'Last Known Vehicle',type:'text',placeholder:'Black Bravado Buffalo — Plate: 4ABD123',span:false},
+      {id:'charges',type:'charges',span:true},
+      {id:'dangerLevel',label:'Danger Level',type:'select',options:['APPROACH WITH CAUTION','ARMED AND DANGEROUS','EXTREMELY DANGEROUS — DO NOT APPROACH ALONE'],span:true},
+      {id:'reward',label:'Reward Offered',type:'text',placeholder:'$5,000 / None',span:false},
+      {id:'contact',label:'Contact if Spotted',type:'text',placeholder:'Dispatch / Sergeant Davis #2011',span:false},
+    ],
+    generate:(f)=>`╔═══════════════════════════════════════════╗
+║   LOS SANTOS POLICE DEPARTMENT           ║
+║           ⚠  WANTED ⚠                    ║
+╚═══════════════════════════════════════════╝
+
+NAME      : ${f.suspectName||'UNKNOWN'}
+ALIAS     : ${f.aliases||'Unknown'}
+
+DESCRIPTION:
+${f.suspectDesc||'Not provided.'}
+
+LAST SEEN : ${f.lastSeen||'Unknown'}
+VEHICLE   : ${f.vehicle||'Unknown'}
+─────────────────────────────────────────────
+WANTED FOR:
+${f.charges||'Charges pending.'}
+─────────────────────────────────────────────
+⚠ ${f.dangerLevel||'APPROACH WITH CAUTION'} ⚠
+─────────────────────────────────────────────
+REWARD    : ${f.reward||'None'}
+CONTACT   : ${f.contact||'LSPD Dispatch'}
+─────────────────────────────────────────────
+ISSUED BY : ${f.officerName||'N/A'} · ${f.date||'N/A'}
+╔═══════════════════════════════════════════╗
+║  IF YOU SEE THIS INDIVIDUAL CALL LSPD     ║
+╚═══════════════════════════════════════════╝`
+  },
+  // COURT DOCKET
+  {id:'docket',cat:'legal',type:'type-legal',typeLabel:'Legal',title:'Court Docket Generator',desc:'Generate a court docket entry for scheduling hearings, trials, and arraignments.',updated:'Jun 2025',access:'LT+',
+    fields:[
+      {id:'docketNum',label:'Docket Number',type:'text',placeholder:'LS-CR-2025-0099',span:false},
+      {id:'courtDate',label:'Court Date & Time',type:'text',placeholder:'06/20/2025 · 10:00 AM',span:false},
+      {id:'judge',label:'Presiding Judge',type:'text',placeholder:'Hon. Judge Williams',span:false},
+      {id:'prosecutor',label:'Prosecutor / DA',type:'text',placeholder:'DA R. Harris',span:false},
+      {id:'defense',label:'Defense Attorney',type:'text',placeholder:'Public Defender J. Lee / Atty. M. Chan',span:false},
+      {id:'defendant',label:'Defendant',type:'text',placeholder:'John Doe',span:false},
+      {id:'caseType',label:'Hearing Type',type:'select',options:['Arraignment','Bail Hearing','Preliminary Hearing','Trial — Bench','Trial — Jury','Sentencing','Appeal'],span:false},
+      {id:'charges',type:'charges',span:true},
+      {id:'plea',type:'plea',span:true},
+      {id:'bailAmount',label:'Bail / Bond Amount',type:'text',placeholder:'$25,000 / Remanded / OR Release',span:false},
+      {id:'courtroom',label:'Courtroom',type:'text',placeholder:'Los Santos Superior Court — Room 4',span:false},
+      {id:'notes',label:'Additional Notes / Orders',type:'textarea',placeholder:'Any pre-trial orders, motions, or notes...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS SUPERIOR COURT
+           COURT DOCKET ENTRY
+═══════════════════════════════════════════
+DOCKET NUMBER   : ${f.docketNum||'N/A'}
+HEARING TYPE    : ${f.caseType||'N/A'}
+DATE & TIME     : ${f.courtDate||'N/A'}
+COURTROOM       : ${f.courtroom||'N/A'}
+───────────────────────────────────────────
+PARTIES
+───────────────────────────────────────────
+PRESIDING JUDGE : ${f.judge||'N/A'}
+PROSECUTOR      : ${f.prosecutor||'N/A'}
+DEFENSE         : ${f.defense||'N/A'}
+DEFENDANT       : ${f.defendant||'N/A'}
+───────────────────────────────────────────
+CHARGES
+───────────────────────────────────────────
+${f.charges||'Pending.'}
+───────────────────────────────────────────
+DEFENDANT PLEA  : ${f.plea||'Not Entered'}
+BAIL / BOND     : ${f.bailAmount||'N/A'}
+───────────────────────────────────────────
+NOTES / ORDERS
+───────────────────────────────────────────
+${f.notes||'None.'}
+═══════════════════════════════════════════`
+  },
+  // PROTECTION ORDER
+  {id:'protection',cat:'legal',type:'type-legal',typeLabel:'Legal',title:'Emergency Protection Order (EPO)',desc:'Emergency protection / restraining order. Issued by command against a specific individual.',updated:'Jun 2025',access:'LT+',
+    fields:[
+      {id:'issuedBy',label:'Issued By (Officer / Judge)',type:'text',placeholder:'Lt. R. Jones #3050 / Judge Williams',span:false},
+      {id:'issueDate',label:'Date & Time Issued',type:'text',placeholder:'06/01/2025 · 14:00',span:false},
+      {id:'expiryDate',label:'Expiry Date',type:'text',placeholder:'06/08/2025 (72 hours / 7 days)',span:false},
+      {id:'petitioner',label:'Petitioner (Protected Person)',type:'text',placeholder:'Jane Doe',span:false},
+      {id:'respondent',label:'Respondent (Restrained Person)',type:'text',placeholder:'John Doe',span:false},
+      {id:'respondentDesc',label:'Respondent Description',type:'text',placeholder:'M, 6\'1, Brown hair, Last known address: ...',span:true},
+      {id:'reason',label:'Basis for Order',type:'textarea',placeholder:'Describe the incidents or threats that justify the order...',span:true},
+      {id:'restrictions',label:'Restrictions Imposed',type:'textarea',placeholder:'1. No contact with petitioner\n2. Stay 100m away from petitioner\'s residence\n3. Surrender any firearms',span:true},
+      {id:'consequences',label:'Consequences for Violation',type:'text',placeholder:'Immediate arrest — P.C. 273.6 Violation of Protective Order',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+  LOS SANTOS POLICE DEPARTMENT
+   EMERGENCY PROTECTION ORDER (EPO)
+═══════════════════════════════════════════
+ISSUED BY       : ${f.issuedBy||'N/A'}
+DATE ISSUED     : ${f.issueDate||'N/A'}
+EXPIRES         : ${f.expiryDate||'N/A'}
+───────────────────────────────────────────
+PROTECTED PARTY : ${f.petitioner||'N/A'}
+───────────────────────────────────────────
+RESTRAINED PARTY: ${f.respondent||'N/A'}
+DESCRIPTION     : ${f.respondentDesc||'N/A'}
+───────────────────────────────────────────
+BASIS FOR ORDER
+───────────────────────────────────────────
+${f.reason||'Not provided.'}
+───────────────────────────────────────────
+RESTRICTIONS IMPOSED
+───────────────────────────────────────────
+${f.restrictions||'None listed.'}
+───────────────────────────────────────────
+VIOLATION       : ${f.consequences||'Immediate arrest.'}
+═══════════════════════════════════════════
+  THIS ORDER IS LEGALLY ENFORCEABLE.
+  ANY VIOLATION MAY RESULT IN ARREST.
+═══════════════════════════════════════════`
+  },
+  // WARRANT — ARREST
+  {id:'warrant-arrest',cat:'warrant',type:'type-warrant',typeLabel:'Warrant',title:'Arrest Warrant',desc:'Formal arrest warrant approved by a superior. Required for non-immediate arrests.',updated:'Jun 2025',access:'SGT+',
+    fields:[
+      {id:'officerName',label:'Requesting Officer & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'supervisorName',label:'Approving Supervisor',type:'text',placeholder:'Sergeant M. Davis #2011',span:false},
+      {id:'suspectName',label:'Subject of Warrant',type:'text',placeholder:'John Doe',span:false},
+      {id:'suspectDesc',label:'Subject Description',type:'text',placeholder:'M, 6\'1, Black hair, last seen...',span:false},
+      {id:'charges',type:'charges',span:true},
+      {id:'evidence',label:'Supporting Evidence',type:'textarea',placeholder:'List evidence supporting the warrant...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+           ARREST WARRANT
+═══════════════════════════════════════════
+REQUESTING OFFICER : ${f.officerName||'N/A'}
+APPROVING SUPERIOR : ${f.supervisorName||'N/A'}
+DATE ISSUED        : ${new Date().toLocaleDateString()}
+───────────────────────────────────────────
+SUBJECT            : ${f.suspectName||'N/A'}
+DESCRIPTION        : ${f.suspectDesc||'N/A'}
+───────────────────────────────────────────
+CHARGES
+───────────────────────────────────────────
+${f.charges||'Not specified.'}
+───────────────────────────────────────────
+SUPPORTING EVIDENCE
+───────────────────────────────────────────
+${f.evidence||'None listed.'}
+═══════════════════════════════════════════
+  THIS WARRANT AUTHORIZES THE ARREST OF
+  THE ABOVE NAMED INDIVIDUAL ON SIGHT.
+    VALID UNTIL EXECUTED OR REVOKED.
+═══════════════════════════════════════════`
+  },
+  // WARRANT — SEARCH
+  {id:'warrant-search',cat:'warrant',type:'type-warrant',typeLabel:'Warrant',title:'Search Warrant',desc:'Authorization to search a specified location or vehicle for evidence.',updated:'Jun 2025',access:'SGT+',
+    fields:[
+      {id:'officerName',label:'Requesting Officer & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'supervisorName',label:'Approving Superior',type:'text',placeholder:'Lieutenant R. Jones #3050',span:false},
+      {id:'location',label:'Location / Property to Search',type:'text',placeholder:'Unit 4B, Rockford Hills Apartments',span:true},
+      {id:'reason',label:'Reason & Probable Cause',type:'textarea',placeholder:'Describe basis for search...',span:true},
+      {id:'evidence',label:'Evidence Sought',type:'textarea',placeholder:'List what officers are looking for...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+           SEARCH WARRANT
+═══════════════════════════════════════════
+REQUESTING OFFICER : ${f.officerName||'N/A'}
+APPROVING SUPERIOR : ${f.supervisorName||'N/A'}
+DATE ISSUED        : ${new Date().toLocaleDateString()}
+───────────────────────────────────────────
+LOCATION TO SEARCH
+───────────────────────────────────────────
+${f.location||'Not specified.'}
+───────────────────────────────────────────
+PROBABLE CAUSE
+───────────────────────────────────────────
+${f.reason||'Not specified.'}
+───────────────────────────────────────────
+EVIDENCE SOUGHT
+───────────────────────────────────────────
+${f.evidence||'Not specified.'}
+═══════════════════════════════════════════
+  THIS WARRANT AUTHORIZES THE SEARCH OF
+  THE ABOVE NAMED PROPERTY / LOCATION.
+═══════════════════════════════════════════`
+  },
+  // INCIDENT REPORT
+  {id:'incident',cat:'report',type:'type-report',typeLabel:'Report',title:'Incident Report',desc:'General incident report for calls not resulting in arrest.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Officer Name & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'incidentDate',label:'Date & Time',type:'text',placeholder:'06/01/2025 · 09:15',span:false},
+      {id:'callType',label:'Type of Call',type:'text',placeholder:'Disturbance / Welfare Check / Suspicious Person',span:false},
+      {id:'location',label:'Location',type:'text',placeholder:'Mirror Park Blvd',span:false},
+      {id:'partiesInvolved',label:'Parties Involved',type:'textarea',placeholder:'List all individuals involved...',span:true},
+      {id:'narrative',label:'Narrative',type:'textarea',placeholder:'Describe what happened...',span:true},
+      {id:'outcome',label:'Outcome / Resolution',type:'text',placeholder:'No arrest, verbal warning issued.',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+          INCIDENT REPORT
+═══════════════════════════════════════════
+OFFICER         : ${f.officerName||'N/A'}
+DATE / TIME     : ${f.incidentDate||'N/A'}
+TYPE OF CALL    : ${f.callType||'N/A'}
+LOCATION        : ${f.location||'N/A'}
+───────────────────────────────────────────
+PARTIES INVOLVED
+───────────────────────────────────────────
+${f.partiesInvolved||'None listed.'}
+───────────────────────────────────────────
+NARRATIVE
+───────────────────────────────────────────
+${f.narrative||'No narrative provided.'}
+───────────────────────────────────────────
+OUTCOME         : ${f.outcome||'N/A'}
+═══════════════════════════════════════════`
+  },
+  // USE OF FORCE
+  {id:'use-of-force',cat:'report',type:'type-report',typeLabel:'Report',title:'Use of Force Report',desc:'Required after any use of force incident. File within 24 hours.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Officer Name & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'date',label:'Date & Time',type:'text',placeholder:'06/01/2025 · 22:45',span:false},
+      {id:'location',label:'Location',type:'text',placeholder:'Sandy Shores Freeway',span:false},
+      {id:'forceType',label:'Type of Force Used',type:'select',options:['Verbal Commands','Restraint / Takedown','Taser / Less-Lethal','Baton','Firearm — Warning Shot','Firearm — Targeted'],span:false},
+      {id:'suspectName',label:'Subject Name',type:'text',placeholder:'John Doe',span:false},
+      {id:'injuries',label:'Injuries Sustained',type:'text',placeholder:'Minor abrasions / None / GSW',span:false},
+      {id:'justification',label:'Justification & Narrative',type:'textarea',placeholder:'Explain why force was necessary...',span:true},
+      {id:'witnesses',label:'Witnesses / Other Officers',type:'text',placeholder:'Sergeant M. Davis #2011',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+        USE OF FORCE REPORT
+═══════════════════════════════════════════
+OFFICER         : ${f.officerName||'N/A'}
+DATE / TIME     : ${f.date||'N/A'}
+LOCATION        : ${f.location||'N/A'}
+FORCE TYPE      : ${f.forceType||'N/A'}
+SUBJECT         : ${f.suspectName||'N/A'}
+INJURIES        : ${f.injuries||'None reported'}
+WITNESSES       : ${f.witnesses||'None listed'}
+───────────────────────────────────────────
+JUSTIFICATION & NARRATIVE
+───────────────────────────────────────────
+${f.justification||'Not provided.'}
+═══════════════════════════════════════════
+  MUST BE SUBMITTED TO IA WITHIN 24 HRS
+═══════════════════════════════════════════`
+  },
+  // PROMO APP
+  {id:'promo-app',cat:'internal',type:'type-internal',typeLabel:'Internal',title:'Promotion Application',desc:'Submit a formal promotion application. Reviewed by command.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'applicantName',label:'Applicant Name & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'currentRank',label:'Current Rank',type:'select',options:['Cadet','Probationary Officer','Officer','Senior Officer','Corporal','Senior Corporal','Sergeant','Lieutenant'],span:false},
+      {id:'targetRank',label:'Applying For',type:'select',options:['Probationary Officer','Officer','Senior Officer','Corporal','Senior Corporal','Sergeant','Lieutenant','Captain'],span:false},
+      {id:'timeInRank',label:'Time in Current Rank',type:'text',placeholder:'3 months',span:false},
+      {id:'certs',label:'Certifications Held',type:'text',placeholder:'FTO, K9, Traffic Enforcement',span:true},
+      {id:'statement',label:'Personal Statement',type:'textarea',placeholder:'Why are you ready for this promotion?',span:true},
+      {id:'references',label:'References',type:'text',placeholder:'Sergeant M. Davis #2011',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+       PROMOTION APPLICATION
+═══════════════════════════════════════════
+APPLICANT       : ${f.applicantName||'N/A'}
+CURRENT RANK    : ${f.currentRank||'N/A'}
+APPLYING FOR    : ${f.targetRank||'N/A'}
+TIME IN RANK    : ${f.timeInRank||'N/A'}
+CERTIFICATIONS  : ${f.certs||'None listed'}
+REFERENCES      : ${f.references||'None listed'}
+───────────────────────────────────────────
+PERSONAL STATEMENT
+───────────────────────────────────────────
+${f.statement||'Not provided.'}
+═══════════════════════════════════════════
+    SUBMIT TO COMMAND VIA DISCORD
+═══════════════════════════════════════════`
+  },
+  // LOA
+  {id:'loa',cat:'internal',type:'type-internal',typeLabel:'Internal',title:'Leave of Absence Request',desc:'Request a LOA from active duty. Submit to direct supervisor.',updated:'Jun 2025',access:'All Officers',
+    fields:[
+      {id:'officerName',label:'Officer Name & Badge',type:'text',placeholder:'Officer J. Smith #1042',span:false},
+      {id:'supervisor',label:'Direct Supervisor',type:'text',placeholder:'Sergeant M. Davis #2011',span:false},
+      {id:'startDate',label:'Start Date',type:'text',placeholder:'06/10/2025',span:false},
+      {id:'endDate',label:'Expected Return Date',type:'text',placeholder:'06/20/2025',span:false},
+      {id:'reason',label:'Reason for LOA',type:'textarea',placeholder:'Briefly explain your reason...',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+     LEAVE OF ABSENCE REQUEST
+═══════════════════════════════════════════
+OFFICER         : ${f.officerName||'N/A'}
+SUPERVISOR      : ${f.supervisor||'N/A'}
+START DATE      : ${f.startDate||'N/A'}
+RETURN DATE     : ${f.endDate||'N/A'}
+───────────────────────────────────────────
+REASON
+───────────────────────────────────────────
+${f.reason||'Not provided.'}
+═══════════════════════════════════════════
+     PENDING SUPERVISOR APPROVAL
+═══════════════════════════════════════════`
+  },
+  // CIVILIAN COMPLAINT
+  {id:'complaint',cat:'notice',type:'type-notice',typeLabel:'Notice',title:'Civilian Complaint Form',desc:'For civilians to file a complaint against an LSPD officer. Forwarded to Internal Affairs.',updated:'Jun 2025',access:'Public',
+    fields:[
+      {id:'complainantName',label:'Your Name',type:'text',placeholder:'Jane Citizen',span:false},
+      {id:'officerName',label:'Officer Being Complained About',type:'text',placeholder:'Badge # or Name',span:false},
+      {id:'date',label:'Date & Time of Incident',type:'text',placeholder:'06/01/2025 · 15:00',span:false},
+      {id:'location',label:'Location',type:'text',placeholder:'Where did this happen?',span:false},
+      {id:'description',label:'Description of Complaint',type:'textarea',placeholder:'Please describe what happened...',span:true},
+      {id:'witnesses',label:'Witnesses',type:'text',placeholder:'Any witnesses?',span:true},
+    ],
+    generate:(f)=>`═══════════════════════════════════════════
+    LOS SANTOS POLICE DEPARTMENT
+      CIVILIAN COMPLAINT FORM
+═══════════════════════════════════════════
+COMPLAINANT     : ${f.complainantName||'N/A'}
+OFFICER         : ${f.officerName||'N/A'}
+DATE / TIME     : ${f.date||'N/A'}
+LOCATION        : ${f.location||'N/A'}
+WITNESSES       : ${f.witnesses||'None listed'}
+───────────────────────────────────────────
+COMPLAINT DESCRIPTION
+───────────────────────────────────────────
+${f.description||'Not provided.'}
+═══════════════════════════════════════════
+   FORWARDED TO INTERNAL AFFAIRS DIVISION
+═══════════════════════════════════════════`
+  },
+];
+
+/* ══ TEMPLATE RENDERING ══ */
+let currentTemplate=null;
+function renderTemplates(cat='all'){
+  const grid=document.getElementById('templateGrid');
+  const filtered=cat==='all'?TEMPLATES:TEMPLATES.filter(t=>t.cat===cat);
+  grid.innerHTML=filtered.map(t=>`
+    <div class="template-card" data-cat="${t.cat}">
+      <span class="card-type ${t.type}">${t.typeLabel}</span>
+      <div class="card-title">${t.title}</div>
+      <div class="card-desc">${t.desc}</div>
+      <div class="card-footer">
+        <span class="card-meta">${t.updated} · ${t.access}</span>
+        <button class="btn-use" onclick="openTemplate('${t.id}')">Use →</button>
+      </div>
+    </div>`).join('');
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTemplates(cat);
+}
+function openTemplate(id){
+  currentTemplate=TEMPLATES.find(t=>t.id===id);
+  if(!currentTemplate)return;
+  currentTemplate.fields.forEach(f=>{
+    if(f.type==='charges')chargePickerState[f.id]=new Set();
+    if(f.type==='plea')pleaState[f.id]=null;
+  });
+  document.getElementById('modalTitle').textContent=currentTemplate.title;
+  const body=document.getElementById('modalBody');
+  body.innerHTML=`
+    <div class="form-grid" id="formGrid">
+      ${currentTemplate.fields.map(f=>{
+        if(f.type==='charges') return`<div class="form-group span2">${buildCP(f.id)}</div>`;
+        if(f.type==='plea') return buildPlea(f.id);
+        return`<div class="form-group${f.span?' span2':''}">
+          <label class="form-label">${f.label}</label>
+          ${f.type==='textarea'?`<textarea class="form-textarea" id="field_${f.id}" placeholder="${f.placeholder||''}"></textarea>`
+          :f.type==='select'?`<select class="form-select" id="field_${f.id}">${f.options.map(o=>`<option>${o}</option>`).join('')}</select>`
+          :`<input class="form-input" type="text" id="field_${f.id}" placeholder="${f.placeholder||''}">`}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="output-box" id="outputBox">
+      <div class="output-header"><span class="output-title">Generated Document</span><button class="btn-copy" onclick="copyOutput()">Copy</button></div>
+      <div id="outputContent"></div>
+    </div>`;
+  currentTemplate.fields.forEach(f=>{if(f.type==='charges')renderCP(f.id);});
+  document.getElementById('modal').classList.add('open');
+}
+function generateDoc(){
+  if(!currentTemplate)return;
+  const vals={};
+  currentTemplate.fields.forEach(f=>{
+    if(f.type==='charges')vals[f.id]=getChargesText(f.id);
+    else if(f.type==='plea')vals[f.id]=getPlea(f.id)==='guilty'?'GUILTY':getPlea(f.id)==='notguilty'?'NOT GUILTY':'Not Entered';
+    else{const el=document.getElementById('field_'+f.id);if(el)vals[f.id]=el.value.trim();}
+  });
+  const result=currentTemplate.generate(vals);
+  document.getElementById('outputContent').textContent=result;
+  document.getElementById('outputBox').classList.add('visible');
+  document.getElementById('outputBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function copyOutput(){
+  navigator.clipboard.writeText(document.getElementById('outputContent').textContent).then(()=>showToast('Document copied to clipboard!'));
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');currentTemplate=null;}
+function closeModalOutside(e){if(e.target.id==='modal')closeModal();}
+
+/* ══ NAV ══ */
+function showSection(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ══ TOAST ══ */
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* ══ PENAL CODE TABLE ══ */
+function renderPC(query=''){
+  const container=document.getElementById('pcTable');
+  const q=query.toLowerCase();
+  const filtered=q?PENAL_CODES.filter(p=>p.code.toLowerCase().includes(q)||p.name.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q)):PENAL_CODES;
+  const cats=[...new Set(filtered.map(p=>p.cat))];
+  if(!filtered.length){container.innerHTML='<div style="color:var(--text-dim);text-align:center;padding:2rem;font-family:Share Tech Mono,monospace;font-size:.8rem;">No matching penal codes found.</div>';return;}
+  container.innerHTML=cats.map(cat=>{
+    const items=filtered.filter(p=>p.cat===cat);
+    return`<div class="ref-category">
+      <div class="ref-cat-title">${cat}</div>
+      <table class="ref-table">
+        <thead><tr><th>Code</th><th>Offense</th><th>Sentence</th><th>Fine</th></tr></thead>
+        <tbody>${items.map(p=>`<tr><td><span class="pc-code">${p.code}</span></td><td>${p.name}</td><td><span class="pc-sentence">${p.sentence}</span></td><td><span class="pc-fine">${p.fine}</span></td></tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+function filterPC(q){renderPC(q);}
+
+/* ══ LEGAL DEFS ══ */
+function renderDefs(query=''){
+  const container=document.getElementById('defsGrid');
+  if(!container)return;
+  const q=query.toLowerCase();
+  const filtered=q?LEGAL_DEFS.filter(d=>d.term.toLowerCase().includes(q)||d.def.toLowerCase().includes(q)):LEGAL_DEFS;
+  if(!filtered.length){container.innerHTML='<div style="color:var(--text-dim);text-align:center;padding:2rem;font-family:Share Tech Mono,monospace;font-size:.8rem;grid-column:span 2;">No matching definitions found.</div>';return;}
+  container.innerHTML=filtered.map(d=>`<div class="law-card"><div class="law-card-title">${d.term}</div><div class="law-card-text">${d.def}</div></div>`).join('');
+}
+function filterDefs(q){renderDefs(q);}
+
+/* ══ COMP CALCULATOR ══ */
+function calcComp(){
+  const rank=parseInt(document.getElementById('calcRank').value)||0;
+  const hours=parseFloat(document.getElementById('calcHours').value)||0;
+  const hazard=parseInt(document.getElementById('calcHazard').value)||0;
+  const certs=parseInt(document.getElementById('calcCerts').value)||0;
+  const health=parseInt(document.getElementById('calcHealth').value)||0;
+  const disc=parseFloat(document.getElementById('calcDiscipline').value)||0;
+  const hourlyRate=rank/40;
+  const regHours=Math.min(hours,40);
+  const otHours=Math.max(0,hours-40);
+  const base=hourlyRate*regHours;
+  const ot=hourlyRate*1.5*otHours;
+  const hazardPay=hazard*500;
+  const total=base+ot+hazardPay+certs-health-disc;
+  document.getElementById('rBase').textContent='$'+base.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rOT').textContent='$'+ot.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rHazard').textContent='$'+hazardPay.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rCerts').textContent='$'+certs.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rHealth').textContent='-$'+health.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rDisc').textContent='-$'+disc.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('rTotal').textContent='$'+Math.max(0,total).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+/* ══ INIT ══ */
+renderTemplates();
+renderPC();
+renderDefs();
+calcComp();
+</script>
+</body>
+</html>
