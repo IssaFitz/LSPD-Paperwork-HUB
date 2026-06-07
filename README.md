@@ -1,2 +1,2 @@
 # LSPD-Paperwork-HUB
-Made for LSPD paperwork in FiveM
+Made for LSPD paperwork for FiveM
